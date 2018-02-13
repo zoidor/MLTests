@@ -1,0 +1,3 @@
+[submodule "tensorflow"]
+	path = 3rdParty/tensorflow
+	url = ../../tensorflow/tensorflow
