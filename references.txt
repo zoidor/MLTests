@@ -1,1 +1,2 @@
 https://stackoverflow.com/questions/33620794/how-to-build-and-use-google-tensorflow-c-api
+https://medium.com/@hamedmp/exporting-trained-tensorflow-models-to-c-the-right-way-cf24b609d183
