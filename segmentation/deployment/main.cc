@@ -87,8 +87,8 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  std::string input_layer = "input";
-  std::string output_layer = "output";
+  std::string input_layer = "input_1:0";
+  std::string output_layer = "conv2d_12/Sigmoid:0";
 
   // Actually run the image through the model.
   std::vector<tensorflow::Tensor> outputs;
