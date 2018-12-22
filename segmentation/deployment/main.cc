@@ -9,7 +9,6 @@
 #include "tensorflow/core/platform/init_main.h"
 #include "tensorflow/core/public/session.h"
 #include "tensorflow/core/framework/tensor_shape.h"
-#include "tensorflow/core/lib/io/path.h"
 
 namespace { //anonymous namespace
 
@@ -99,5 +98,22 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
+  auto& output = outputs[0];
+  std::cout<<output.shape()<<'\n';
+
+  auto& shape = output.shape();
+  std::size_t area = 1;
+  for(std::size_t i = 0; i < 4; ++i)
+	area *= shape.dim_size(i);
+
+  if(output.dtype() != tensorflow::DT_FLOAT){
+	std::cout<<"Unexpected type for output layer, aborting\n";
+	return -1; 
+  }
+
+  const float* data = output.flat<float>().data();
+  for(std::size_t i = 0; i < 10; ++i)
+	std::cout << data[i] << '\n';
+  
   return 0;
 }
