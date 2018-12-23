@@ -4,6 +4,8 @@ tf_cc_binary(
     name = "cell_segmentation",
     srcs = [
         "main.cc",
+        "tiff_utils.cc",
+        "tiff_utils.h",
     ],
     linkopts = select({
         "//tensorflow:android": [
@@ -16,7 +18,7 @@ tf_cc_binary(
             "-s",
             "-Wl,--exclude-libs,ALL",
         ],
-        "//conditions:default": ["-lm"],
+        "//conditions:default": ["-lm -ltiff"],
     }),
     deps = select({
         "//tensorflow:android": [

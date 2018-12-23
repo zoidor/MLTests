@@ -1,29 +1,27 @@
 #include <fstream>
 #include <utility>
 #include <string>
-#include <vector>
-
-#include <cstdlib>
 
 #include "tensorflow/cc/ops/standard_ops.h"
 #include "tensorflow/core/platform/init_main.h"
 #include "tensorflow/core/public/session.h"
 #include "tensorflow/core/framework/tensor_shape.h"
+#include "tensorflow/core/framework/tensor.h"
+
+#include "tiff_utils.h"
 
 namespace { //anonymous namespace
 
 tensorflow::Status ReadTensorFromTiff(const std::string& file_name, const int expected_cropped_height,
         const int expected_cropped_width, tensorflow::Tensor& out_tensor)
 {
+	
+	out_tensor = segmentation::readTiffImage(file_name.c_str(), 0, 0, expected_cropped_height, expected_cropped_width);
 
-    const int batch_index = 1;
-    tensorflow::TensorShape shape{batch_index, expected_cropped_height, expected_cropped_width, 1};
-    out_tensor = tensorflow::Tensor{tensorflow::DT_FLOAT, shape};
+	if(out_tensor.NumElements() == 0)
+		return tensorflow::errors::NotFound("Unable to decode TIFF file");
 
-    std::vector<std::uint16_t> ori_img(expected_cropped_height * expected_cropped_width, 6);
-    std::copy(ori_img.cbegin(), ori_img.cend(), out_tensor.flat<float>().data());
-
-    return tensorflow::Status::OK();
+        return tensorflow::Status::OK();
 }
 
 // Reads a model graph definition from disk, and creates a session object you

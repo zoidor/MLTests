@@ -150,7 +150,7 @@ class TiffReadFileHandle{
 };
 
 
-tensorflow::Tensor Segmentation::readTiffImage(const char * filePath, 
+tensorflow::Tensor segmentation::readTiffImage(const char * filePath, 
                      const std::size_t xMin, const std::size_t yMin, 
                      const std::int64_t cropped_h, const std::int64_t cropped_w){
 
@@ -166,7 +166,7 @@ tensorflow::Tensor Segmentation::readTiffImage(const char * filePath,
 	if(buff.isEmpty()) return {};
 
 	const int batch_index = 1;
-        tensorflow::TensorShape shape{batch_index, cropped_h, cropped_w, buff.getChannels()};
+        tensorflow::TensorShape shape{batch_index, cropped_h, cropped_w, static_cast<std::int64_t>(buff.getChannels())};
         tensorflow::Tensor out_tensor{tensorflow::DT_FLOAT, shape};
 	
 	const auto xMax = xMin + cropped_w;

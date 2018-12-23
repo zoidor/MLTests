@@ -3,7 +3,7 @@
 
 #include "tensorflow/core/framework/tensor.h"
 
-namespace Segmentation{
+namespace segmentation{
 	tensorflow::Tensor readTiffImage(const char * filePath, 
                      const std::size_t xMin, const std::size_t yMin, 
                      const std::int64_t cropped_h, const std::int64_t cropped_w);
