@@ -40,6 +40,7 @@ tf_cc_binary(
         ],
     }),
 
-   data = ["data/test_model_tensorflow.pb"],
+   data = ["data/test_model_tensorflow.pb",
+	   "data/image.tif"],
 )
 

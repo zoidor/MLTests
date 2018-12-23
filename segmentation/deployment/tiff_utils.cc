@@ -40,6 +40,7 @@ class TiffBuffer
 			pData = (std::uint32_t*)_TIFFmalloc(other.w * other.h * sizeof(std::uint32_t));
 			w = other.w;
 			h = other.h;
+			channels = other.channels;
 			_TIFFmemcpy(pData, other.pData, sizeof(std::uint32_t) * w * h);
 			return *this;
 		}
@@ -48,6 +49,7 @@ class TiffBuffer
 			std::swap(pData, other.pData);	
 			std::swap(w, other.w);
 			std::swap(h, other.h);			
+			std::swap(channels, other.channels);			
 		}
 
 		TiffBuffer& operator=(TiffBuffer&& other){		
@@ -58,6 +60,7 @@ class TiffBuffer
 			other.pData = nullptr;
 			w = other.w;
 			h = other.h;
+			channels = other.channels;
 			return *this;
 		}
 
@@ -135,7 +138,7 @@ class TiffReadFileHandle{
 			TIFFGetField(pfile, TIFFTAG_SAMPLESPERPIXEL, &channels);			
 
 			if((w * h) == 0) return TiffBuffer{};
-				
+
 			TiffBuffer buff{w, h, channels}; 
 			if (!TIFFReadRGBAImage(pfile, w, h, buff.getRaster(), 0)) return TiffBuffer{};
 			return buff;
@@ -157,13 +160,16 @@ tensorflow::Tensor segmentation::readTiffImage(const char * filePath,
 	if(cropped_w <= 0) return {};
 	if(cropped_h <= 0) return {};	
 
+
 	TiffReadFileHandle file(filePath);
 	
-	if(!file.ok()) return {};
-
+	if(!file.ok())
+		 return {};
+	
 	auto buff = file.read();
 	
-	if(buff.isEmpty()) return {};
+	if(buff.isEmpty())
+		return {};
 
 	const int batch_index = 1;
         tensorflow::TensorShape shape{batch_index, cropped_h, cropped_w, static_cast<std::int64_t>(buff.getChannels())};

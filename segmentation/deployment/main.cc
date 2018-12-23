@@ -53,7 +53,7 @@ std::unique_ptr<tensorflow::Session> LoadGraph(const std::string& graph_file_nam
 int main(int argc, char* argv[]) {
 
   const char* model_path = "segmentation/data/test_model_tensorflow.pb";
- 
+  const char * tiff_file = "segmentation/data/image.tif";
   const int cropped_input_height = 512;
   const int cropped_input_width = 688;
 
@@ -76,16 +76,15 @@ int main(int argc, char* argv[]) {
   // to the specifications the main graph expects.
   tensorflow::Tensor resized_tensor;
   tensorflow::Status read_tensor_status =
-          ReadTensorFromTiff("", cropped_input_height , cropped_input_width, resized_tensor);
-
+          ReadTensorFromTiff(tiff_file, cropped_input_height , cropped_input_width, resized_tensor);
 
   if (!read_tensor_status.ok()) {
     LOG(ERROR) << read_tensor_status;
     return -1;
   }
 
-  std::string input_layer = "input_1:0";
-  std::string output_layer = "conv2d_12/Sigmoid:0";
+  std::string input_layer{"input_1:0"};
+  std::string output_layer{"conv2d_12/Sigmoid:0"};
 
   // Actually run the image through the model.
   std::vector<tensorflow::Tensor> outputs;
@@ -97,7 +96,6 @@ int main(int argc, char* argv[]) {
   }
 
   auto& output = outputs[0];
-  std::cout<<output.shape()<<'\n';
 
   auto& shape = output.shape();
   std::size_t area = 1;
