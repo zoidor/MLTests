@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+import numpy
+import matplotlib.pyplot as plt 
+
+#fname = "dumpInput.txt"
+fname = "dumpSegmentation.txt"
+w = 688
+h = 512
+
+f = open(fname, "r")
+
+data = f.read().split('\n')
+
+data = data[0 : len(data) - 1]
+
+data = [float(e) for e in data]
+
+data = numpy.reshape(data, [h, w])
+
+plt.imshow(data)
+plt.show()
+
+f.close()

@@ -1,6 +1,7 @@
 #include <fstream>
 #include <utility>
 #include <string>
+#include <fstream>
 
 #include "tensorflow/cc/ops/standard_ops.h"
 #include "tensorflow/core/platform/init_main.h"
@@ -46,6 +47,25 @@ std::unique_ptr<tensorflow::Session> LoadGraph(const std::string& graph_file_nam
   }
 
   return session;
+}
+
+void dumpTensor(const tensorflow::Tensor& tensor, const char * fname){
+
+  const float* data = tensor.flat<float>().data();
+
+  std::ofstream dumpTensorFile;
+  dumpTensorFile.open(fname);
+  
+  if(!dumpTensorFile.is_open()){
+ 	std::cout << "Unable to open the dump file " << fname << '\n';
+	return;
+  }
+
+  for(int i = 0; i < tensor.NumElements(); ++i){
+	dumpTensorFile <<  data[i] <<'\n';
+  }
+
+
 }
 
 }//END anonymous namespace
@@ -97,19 +117,12 @@ int main(int argc, char* argv[]) {
 
   auto& output = outputs[0];
 
-  auto& shape = output.shape();
-  std::size_t area = 1;
-  for(std::size_t i = 0; i < 4; ++i)
-	area *= shape.dim_size(i);
-
   if(output.dtype() != tensorflow::DT_FLOAT){
 	std::cout<<"Unexpected type for output layer, aborting\n";
 	return -1; 
   }
 
-  const float* data = output.flat<float>().data();
-  for(std::size_t i = 0; i < 10; ++i)
-	std::cout << data[i] << '\n';
-  
+  dumpTensor(output, "dumpSegmentation.txt");
+  dumpTensor(resized_tensor, "dumpInput.txt");
   return 0;
 }
