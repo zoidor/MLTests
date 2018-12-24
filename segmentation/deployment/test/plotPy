@@ -3,8 +3,8 @@
 import numpy
 import matplotlib.pyplot as plt 
 
-#fname = "dumpInput.txt"
-fname = "dumpSegmentation.txt"
+fname = "dumpInput.txt"
+#fname = "dumpSegmentation.txt"
 w = 688
 h = 512
 
