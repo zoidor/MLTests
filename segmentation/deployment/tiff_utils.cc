@@ -182,6 +182,7 @@ tensorflow::Tensor segmentation::readTiffImage(const char * filePath,
 
 	using typeUndEnum = typename std::underlying_type<TiffBuffer::TiffChannel>::type;
 	std::size_t i = 0;
+	//same order used in gif_io.cc
 	for(std::size_t y = yMin; y < yMax; ++y){
 		for(std::size_t x = xMin; x < xMax; ++x){
 			for(typeUndEnum channel = 0; channel < buff.getChannels(); ++channel){
