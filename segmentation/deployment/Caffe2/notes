@@ -1,6 +1,6 @@
 .so files and includes are installed with pip and found in 
 
-/home/salmi86/.local/lib/python3.6
+$HOME/.local/lib/python3.6
 
 
 
