@@ -10,7 +10,7 @@ Found 1 possible outputs: (name=conv2d_12/Sigmoid, op=Sigmoid)
 Found 438536 (438.54k) const parameters, 0 (0) variable parameters, and 0 control_edges
 Op types used: 43 Const, 24 Identity, 12 BiasAdd, 12 Conv2D, 11 Relu, 4 MaxPool, 4 Mul, 4 ResizeNearestNeighbor, 4 Shape, 4 StridedSlice, 3 ConcatV2, 1 Placeholder, 1 Sigmoid
 To use with tensorflow/tools/benchmark:benchmark_model try these arguments:
-bazel run tensorflow/tools/benchmark:benchmark_model -- --graph=/home/salmi86/MLTests/segmentation/deployment/Caffe2/test_model_tensorflow.pb --show_flops --input_layer=input_1 --input_layer_type=float --input_layer_shape=-1,512,688,1 --output_layer=conv2d_12/Sigmoid
+bazel run tensorflow/tools/benchmark:benchmark_model -- --graph=$HOME/MLTests/segmentation/deployment/Caffe2/test_model_tensorflow.pb --show_flops --input_layer=input_1 --input_layer_type=float --input_layer_shape=-1,512,688,1 --output_layer=conv2d_12/Sigmoid
 
 ---------------------------------------------------------------------------------------------------------
 
