@@ -186,7 +186,8 @@ tensorflow::Tensor segmentation::readTiffImage(const char * filePath,
 	for(std::size_t y = yMin; y < yMax; ++y){
 		for(std::size_t x = xMin; x < xMax; ++x){
 			for(typeUndEnum channel = 0; channel < buff.getChannels(); ++channel){
-				pData[++i] = buff.get(x, y,  static_cast<TiffBuffer::TiffChannel>(channel)); 
+				pData[i] = buff.get(x, y,  static_cast<TiffBuffer::TiffChannel>(channel)); 
+				i++;
 			} 							
 		}
 	} 
