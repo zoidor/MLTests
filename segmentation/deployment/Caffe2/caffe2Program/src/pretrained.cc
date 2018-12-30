@@ -13,9 +13,11 @@ std::string file{"res/image_file.jpg"};
 std::string classes{ "res/imagenet_classes.txt"};
 const int size = 227;
 
-namespace caffe2 {
+namespace {
 
 void run() {
+
+  using namespace caffe2;
   std::cout << std::endl;
   std::cout << "## Caffe2 Loading Pre-Trained Models Tutorial ##" << std::endl;
   std::cout << "https://caffe2.ai/docs/zoo.html" << std::endl;
@@ -111,11 +113,11 @@ void run() {
   }
 }
 
-}  // namespace caffe2
+}  // anonymous namespace
 
 int main(int argc, char **argv) {
   caffe2::GlobalInit(&argc, &argv);
-  caffe2::run();
+  run();
   google::protobuf::ShutdownProtobufLibrary();
   return 0;
 }
