@@ -1,6 +1,6 @@
 Step to install:
 
-1. Download LibTorch https://pytorch.org/get-started/locally/ and unzip, overriding the "libtorch" directory
+1. Download LibTorch https://pytorch.org/get-started/locally/ and unzip in the directory caffe2Program, so that caffe2Program/libtorch is created. 
 2. Install MKL, I used the first Option in https://gist.github.com/pachamaltese/afc4faef2f191b533556f261a46b3aa8. I am copying the instruction for completeness
 
 cd ~
