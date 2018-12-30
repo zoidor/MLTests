@@ -26,7 +26,7 @@ void run() {
   std::cout << std::endl;
 
   
-  auto image = cv::imread(file);  // CV_8UC3
+  cv::Mat image = cv::imread(file);  // CV_8UC3
   std::cout << "image size: " << image.size() << std::endl;
 
   // scale image to fit
@@ -51,14 +51,23 @@ void run() {
                                  (float *)image.dataend)
             << ")" << std::endl;
 
-  // convert NHWC to NCHW
-  vector<cv::Mat> channels(3);
-  cv::split(image, channels);
+  // convert image to the expected input format I_R(0,0), I_G(0,0), I_B(0,0), I_R(1,0) .....
+
+  const std::size_t img_num_pixels = image.cols * image.rows * image.channels();
+
   std::vector<float> data;
-  for (auto &c : channels) {
-    data.insert(data.end(), (float *)c.datastart, (float *)c.dataend);
+  data.reserve(img_num_pixels);
+  
+  std::size_t i = 0;
+  for(std::size_t y = 0; y < image.rows; ++y) {
+    for (std::size_t x = 0; x < image.cols; ++x){
+	for(std::size_t channel = 0; channel < image.channels(); ++channel){
+		data[i] = image.at<float>(y, x, channel);
+		++i;
+	}
+    }
   }
-  std::vector<std::int64_t> dims({1, image.channels(), image.rows, image.cols});
+  std::vector<std::int64_t> dims({1, image.rows, image.cols, image.channels()});
 
   auto tensor = caffe2::TensorCPUFromValues(dims, at::ArrayRef<decltype(data)::value_type>{data});
  
@@ -83,32 +92,22 @@ void run() {
   auto &output_name = predict_net.external_output(0);
   auto output = workspace.GetBlob(output_name)->Get<TensorCPU>();
 
+  if(output.numel() != img_num_pixels){
+	std::cout<<"Input and Output tensors must have the same dimensions\n";
+	return;
+   }
+
   // sort top results
   const auto &probs = output.data<float>();
-  std::vector<std::pair<int, int>> pairs;
-  for (auto i = 0; i < output.size(); i++) {
-    if (probs[i] > 0.01) {
-      pairs.push_back(std::make_pair(probs[i] * 100, i));
+  
+  i = 0;
+  for(std::size_t y = 0; y < image.rows; ++y) {
+    for (std::size_t x = 0; x < image.cols; ++x){
+	for(std::size_t channel = 0; channel < image.channels(); ++channel){
+		image.at<float>(y, x, channel) = probs[i];
+		++i;
+	}
     }
-  }
-
-  std::sort(pairs.begin(), pairs.end());
-
-  std::cout << std::endl;
-
-  // read classes
-  std::ifstream file(classes);
-  std::string temp;
-  std::vector<std::string> classes;
-  while (std::getline(file, temp)) {
-    classes.push_back(temp);
-  }
-
-  // show results
-  std::cout << "output: " << std::endl;
-  for (auto pair : pairs) {
-    std::cout << "  " << pair.first << "% '" << classes[pair.second] << "' ("
-              << pair.second << ")" << std::endl;
   }
 }
 
