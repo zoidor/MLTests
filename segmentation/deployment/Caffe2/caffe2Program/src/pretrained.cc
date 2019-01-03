@@ -7,15 +7,17 @@
 
 #include <fstream>
 
-std::string init_net_fname{"res/squeezenet_init_net.pb"};
-std::string predict_net_fname{"res/squeezenet_predict_net.pb"};
-std::string file{"res/image_file.jpg"};
-std::string classes{ "res/imagenet_classes.txt"};
-const int size = 227;
+std::string init_net_fname{"../data/init_net.pb"};
+std::string predict_net_fname{"../data/test_model.pb"};
+
+std::string file{"../data/image.tif"};
+
+const int cropped_input_height = 512;
+const int cropped_input_width = 688;
 
 namespace {
 
-void run() {
+int run() {
 
   using namespace caffe2;
   std::cout << std::endl;
@@ -28,23 +30,21 @@ void run() {
   std::cout << std::endl;
 
   
-  cv::Mat image = cv::imread(file);  // CV_8UC3
+  cv::Mat image = cv::imread(file, CV_LOAD_IMAGE_GRAYSCALE); 
   std::cout << "image size: " << image.size() << std::endl;
 
-  // scale image to fit
-  cv::Size scale(std::max(size * image.cols / image.rows, size),
-                 std::max(size, size * image.rows / image.cols));
-  cv::resize(image, image, scale);
-  std::cout << "scaled size: " << image.size() << std::endl;
+  if(image.cols == 0 || image.rows == 0) {
+	std::cout << "unable to read image: " << file << '\n';
+	return -1;
+  }
 
   // crop image to fit
-  cv::Rect crop((image.cols - size) / 2, (image.rows - size) / 2,
-                size, size);
+  cv::Rect crop(0, 0, std::min(cropped_input_width, image.cols), std::min(cropped_input_height, image.rows));
   image = image(crop);
   std::cout << "cropped size: " << image.size() << std::endl;
 
-  // convert to float, normalize to mean 128
-  image.convertTo(image, CV_32FC3, 1.0, -128);
+  //cast image to float
+  image.convertTo(image, CV_32FC3);
   std::cout << "value range: ("
             << *std::min_element((float *)image.datastart,
                                  (float *)image.dataend)
@@ -52,6 +52,8 @@ void run() {
             << *std::max_element((float *)image.datastart,
                                  (float *)image.dataend)
             << ")" << std::endl;
+  
+  std::cout << "Channels: " << image.channels() << '\n';
 
   // convert image to the expected input format I_R(0,0), I_G(0,0), I_B(0,0), I_R(1,0) .....
 
@@ -60,15 +62,18 @@ void run() {
   std::vector<float> data;
   data.reserve(img_num_pixels);
   
-  std::size_t i = 0;
+  std::vector<cv::Mat> imgChannels(image.channels());
+  cv::split(image, imgChannels);
+
   for(std::size_t y = 0; y < image.rows; ++y) {
     for (std::size_t x = 0; x < image.cols; ++x){
 	for(std::size_t channel = 0; channel < image.channels(); ++channel){
-		data[i] = image.at<float>(y, x, channel);
-		++i;
+		const auto px = imgChannels[channel].at<float>(y, x);
+		data.push_back(px);
 	}
     }
   }
+
   std::vector<std::int64_t> dims({1, image.rows, image.cols, image.channels()});
 
   auto tensor = caffe2::TensorCPUFromValues(dims, at::ArrayRef<decltype(data)::value_type>{data});
@@ -96,13 +101,13 @@ void run() {
 
   if(output.numel() != img_num_pixels){
 	std::cout<<"Input and Output tensors must have the same dimensions\n";
-	return;
+	return -1;
    }
 
   // sort top results
   const auto &probs = output.data<float>();
   
-  i = 0;
+  std::size_t i = 0;
   for(std::size_t y = 0; y < image.rows; ++y) {
     for (std::size_t x = 0; x < image.cols; ++x){
 	for(std::size_t channel = 0; channel < image.channels(); ++channel){
@@ -111,13 +116,14 @@ void run() {
 	}
     }
   }
+  return 0;
 }
 
 }  // anonymous namespace
 
 int main(int argc, char **argv) {
   caffe2::GlobalInit(&argc, &argv);
-  run();
+  auto success = run();
   google::protobuf::ShutdownProtobufLibrary();
-  return 0;
+  return success;
 }
