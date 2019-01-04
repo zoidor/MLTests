@@ -65,9 +65,9 @@ int run() {
   std::vector<cv::Mat> imgChannels(image.channels());
   cv::split(image, imgChannels);
 
-  for(std::size_t y = 0; y < image.rows; ++y) {
-    for (std::size_t x = 0; x < image.cols; ++x){
-	for(std::size_t channel = 0; channel < image.channels(); ++channel){
+  for(int y = 0; y < image.rows; ++y) {
+    for (int x = 0; x < image.cols; ++x){
+	for(int channel = 0; channel < image.channels(); ++channel){
 		const auto px = imgChannels[channel].at<float>(y, x);
 		data.push_back(px);
 	}
@@ -88,7 +88,7 @@ int run() {
   CAFFE_ENFORCE(ReadProtoFromFile(predict_net_fname, &predict_net));
 
   // >>> p = workspace.Predictor(init_net, predict_net)
-  Workspace workspace("tmp");
+  Workspace workspace("default");
   CAFFE_ENFORCE(workspace.RunNetOnce(init_net));
   auto input = workspace.CreateBlob("data")->GetMutable<TensorCPU>();
   input->ResizeLike(tensor);
@@ -99,7 +99,7 @@ int run() {
   auto &output_name = predict_net.external_output(0);
   auto output = workspace.GetBlob(output_name)->Get<TensorCPU>();
 
-  if(output.numel() != img_num_pixels){
+  if(static_cast<std::size_t>(output.numel()) != img_num_pixels){
 	std::cout<<"Input and Output tensors must have the same dimensions\n";
 	return -1;
    }
@@ -108,9 +108,9 @@ int run() {
   const auto &probs = output.data<float>();
   
   std::size_t i = 0;
-  for(std::size_t y = 0; y < image.rows; ++y) {
-    for (std::size_t x = 0; x < image.cols; ++x){
-	for(std::size_t channel = 0; channel < image.channels(); ++channel){
+  for(int y = 0; y < image.rows; ++y) {
+    for (int x = 0; x < image.cols; ++x){
+	for(int channel = 0; channel < image.channels(); ++channel){
 		image.at<float>(y, x, channel) = probs[i];
 		++i;
 	}
@@ -124,6 +124,5 @@ int run() {
 int main(int argc, char **argv) {
   caffe2::GlobalInit(&argc, &argv);
   auto success = run();
-  google::protobuf::ShutdownProtobufLibrary();
   return success;
 }
