@@ -81,21 +81,27 @@ int run() {
   // Load Squeezenet model
   NetDef init_net, predict_net;
 
-  // >>> with open(path_to_INIT_NET) as f:
   CAFFE_ENFORCE(ReadProtoFromFile(init_net_fname, &init_net));
-
-  // >>> with open(path_to_PREDICT_NET) as f:
   CAFFE_ENFORCE(ReadProtoFromFile(predict_net_fname, &predict_net));
 
-  // >>> p = workspace.Predictor(init_net, predict_net)
   Workspace workspace("default");
   CAFFE_ENFORCE(workspace.RunNetOnce(init_net));
-  auto input = workspace.CreateBlob("data")->GetMutable<TensorCPU>();
+   
+  const char *  inputLayerName = "input_1_orig";
+
+  if(!workspace.HasBlob(inputLayerName)){
+	std::cout << "Unable to load input layer " << inputLayerName <<'\n';
+	return -1;
+  }
+
+  auto input = workspace.CreateBlob(inputLayerName)->GetMutable<TensorCPU>();
+
   input->ResizeLike(tensor);
   input->ShareData(tensor);
+  
+
   CAFFE_ENFORCE(workspace.RunNetOnce(predict_net));
 
-  // >>> results = p.run([img])
   auto &output_name = predict_net.external_output(0);
   auto output = workspace.GetBlob(output_name)->Get<TensorCPU>();
 
@@ -104,7 +110,6 @@ int run() {
 	return -1;
    }
 
-  // sort top results
   const auto &probs = output.data<float>();
   
   std::size_t i = 0;
@@ -116,6 +121,7 @@ int run() {
 	}
     }
   }
+
   return 0;
 }
 
