@@ -1,28 +1,32 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.3)
+project(caffe2)
+include(ExternalProject)
 
-project (caffe2_cpp_tutorial)
+find_package(PythonInterp 2.7)
+find_package(PythonLibs 2.7)
+find_package(CUDA)
 
-find_package(Protobuf REQUIRED)
-find_package(OpenCV REQUIRED)
-find_package(Caffe2 REQUIRED PATHS libtorch)
-find_package(ATen REQUIRED PATHS libtorch)
+if(NOT CUDA_FOUND)
+  set(USE_CUDA OFF)
+else()
+  set(USE_CUDA ON)
+endif()
 
-add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+execute_process(COMMAND "python -c 'from distutils.sysconfig import get_python_inc; print(get_python_inc())')" OUTPUT_VARIABLE PYTHON_INCLUDE_DIR)
 
-include_directories(include)
-include_directories(libtorch/include)
+ExternalProject_Add(${PROJECT_NAME}-ext
+  PREFIX ext
+  GIT_REPOSITORY http://github.com/pytorch/pytorch.git
+  INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
-set(DYNAMIC_LIBS)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
-
-add_executable(main "src/pretrained.cc")
-target_link_libraries(main caffe2_library ${OpenCV_LIBS} ${PROTOBUF_LIBRARY})
-target_compile_options(main PRIVATE -Werror -Wall -Wextra)
-#c10
-#https://github.com/facebookarchive/caffe2/issues/347
-#http://jamesonquave.com/blog/caffe2-on-ios-deep-learning-tutorial/
-#Cannot create operator of type 'GivenTensorFill' on the device 'CPU'. Verify that implementation for the corresponding device exist. It might also happen if the binary is not linked with the operator implementation code. 
+  CMAKE_ARGS    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+                -DPYTHON_INCLUDE_DIRS=${PYTHON_INCLUDE_DIR}
+                -DCUDNN_ROOT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/cuda
+                -DUSE_CUDA=${USE_CUDA}
+                -DUSE_OPENMP=ON
+                -DUSE_LEVELDB=OFF
+                -DUSE_LMDB=OFF
+                -DUSE_NATIVE_ARCH=ON
+                -DUSE_METAL=OFF
+                -DBUILD_CUSTOM_PROTOBUF=ON
+)

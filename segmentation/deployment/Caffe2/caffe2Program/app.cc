@@ -7,10 +7,10 @@
 
 #include <fstream>
 
-std::string init_net_fname{"../data/init_net.pb"};
-std::string predict_net_fname{"../data/test_model.pb"};
+std::string init_net_fname{"data/init_net.pb"};
+std::string predict_net_fname{"data/test_model.pb"};
 
-std::string file{"../data/image.tif"};
+std::string file{"data/image.tif"};
 
 const int cropped_input_height = 512;
 const int cropped_input_width = 688;
