@@ -1,0 +1,939 @@
+name: "1801c3088dd74ba687ad6ea8c0283aba"
+op {
+  input: "input_1_0"
+  output: "adjusted_input"
+  name: "Transpose"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input"
+  input: "W"
+  input: "B"
+  output: "convolution_output"
+  name: "_class__keras_layers_convolutional_Conv2D__"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output"
+  output: "activation_output"
+  name: "Relu"
+  type: "Relu"
+}
+op {
+  input: "activation_output"
+  output: "pooling_output"
+  name: "_class__keras_layers_pooling_MaxPooling2D__"
+  type: "MaxPool"
+  arg {
+    name: "strides"
+    ints: 2
+    ints: 2
+  }
+  arg {
+    name: "kernels"
+    ints: 2
+    ints: 2
+  }
+  arg {
+    name: "auto_pad"
+    s: "VALID"
+  }
+}
+op {
+  input: "pooling_output"
+  output: "max_pooling2d_1_MaxPool_0"
+  name: "Transpose3"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+op {
+  input: "max_pooling2d_1_MaxPool_0"
+  output: "adjusted_input1"
+  name: "Transpose4"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input1"
+  input: "W1"
+  input: "B1"
+  output: "convolution_output1"
+  name: "_class__keras_layers_convolutional_Conv2D__1"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output1"
+  output: "activation_output1"
+  name: "Relu1"
+  type: "Relu"
+}
+op {
+  input: "max_pooling2d_1_MaxPool_0"
+  output: "adjusted_input2"
+  name: "Transpose6"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input2"
+  input: "W2"
+  input: "B2"
+  output: "convolution_output2"
+  name: "_class__keras_layers_convolutional_Conv2D__9"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output2"
+  output: "activation_output2"
+  name: "Relu2"
+  type: "Relu"
+}
+op {
+  input: "activation_output2"
+  output: "conv2d_10_Relu_0"
+  name: "Transpose7"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+op {
+  input: "activation_output1"
+  output: "pooling_output1"
+  name: "_class__keras_layers_pooling_MaxPooling2D__1"
+  type: "MaxPool"
+  arg {
+    name: "strides"
+    ints: 2
+    ints: 2
+  }
+  arg {
+    name: "kernels"
+    ints: 2
+    ints: 2
+  }
+  arg {
+    name: "auto_pad"
+    s: "VALID"
+  }
+}
+op {
+  input: "pooling_output1"
+  output: "max_pooling2d_2_MaxPool_0"
+  name: "Transpose9"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+op {
+  input: "max_pooling2d_2_MaxPool_0"
+  output: "adjusted_input3"
+  name: "Transpose10"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input3"
+  input: "W3"
+  input: "B3"
+  output: "convolution_output3"
+  name: "_class__keras_layers_convolutional_Conv2D__2"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output3"
+  output: "activation_output3"
+  name: "Relu3"
+  type: "Relu"
+}
+op {
+  input: "max_pooling2d_2_MaxPool_0"
+  output: "adjusted_input4"
+  name: "Transpose12"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input4"
+  input: "W4"
+  input: "B4"
+  output: "convolution_output4"
+  name: "_class__keras_layers_convolutional_Conv2D__7"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output4"
+  output: "activation_output4"
+  name: "Relu4"
+  type: "Relu"
+}
+op {
+  input: "activation_output4"
+  output: "conv2d_8_Relu_0"
+  name: "Transpose13"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+op {
+  input: "activation_output3"
+  output: "pooling_output2"
+  name: "_class__keras_layers_pooling_MaxPooling2D__2"
+  type: "MaxPool"
+  arg {
+    name: "strides"
+    ints: 2
+    ints: 2
+  }
+  arg {
+    name: "kernels"
+    ints: 2
+    ints: 2
+  }
+  arg {
+    name: "auto_pad"
+    s: "VALID"
+  }
+}
+op {
+  input: "pooling_output2"
+  output: "max_pooling2d_3_MaxPool_0"
+  name: "Transpose15"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+op {
+  input: "max_pooling2d_3_MaxPool_0"
+  output: "adjusted_input5"
+  name: "Transpose16"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input5"
+  input: "W5"
+  input: "B5"
+  output: "convolution_output5"
+  name: "_class__keras_layers_convolutional_Conv2D__3"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output5"
+  output: "activation_output5"
+  name: "Relu5"
+  type: "Relu"
+}
+op {
+  input: "max_pooling2d_3_MaxPool_0"
+  output: "adjusted_input6"
+  name: "Transpose18"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input6"
+  input: "W6"
+  input: "B6"
+  output: "convolution_output6"
+  name: "_class__keras_layers_convolutional_Conv2D__5"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output6"
+  output: "activation_output6"
+  name: "Relu6"
+  type: "Relu"
+}
+op {
+  input: "activation_output6"
+  output: "conv2d_6_Relu_0"
+  name: "Transpose19"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+op {
+  input: "activation_output5"
+  output: "pooling_output3"
+  name: "_class__keras_layers_pooling_MaxPooling2D__3"
+  type: "MaxPool"
+  arg {
+    name: "strides"
+    ints: 2
+    ints: 2
+  }
+  arg {
+    name: "kernels"
+    ints: 2
+    ints: 2
+  }
+  arg {
+    name: "auto_pad"
+    s: "VALID"
+  }
+}
+op {
+  input: "pooling_output3"
+  input: "W7"
+  input: "B7"
+  output: "convolution_output7"
+  name: "_class__keras_layers_convolutional_Conv2D__4"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output7"
+  output: "activation_output7"
+  name: "Relu7"
+  type: "Relu"
+}
+op {
+  input: "activation_output7"
+  output: "conv2d_5_Relu_0_permuted_upsampled"
+  name: "Upsample"
+  type: "ResizeNearest"
+  arg {
+    name: "scales"
+    floats: 1.0
+    floats: 1.0
+    floats: 2.0
+    floats: 2.0
+  }
+}
+op {
+  input: "conv2d_5_Relu_0_permuted_upsampled"
+  output: "up_sampling2d_1_ResizeNearestNeighbor_0"
+  name: "Transpose25"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+op {
+  input: "conv2d_6_Relu_0"
+  input: "up_sampling2d_1_ResizeNearestNeighbor_0"
+  output: "concatenate_1_concat_0"
+  output: "OC2_DUMMY_0"
+  name: "_class__keras_layers_merge_Concatenate__"
+  type: "Concat"
+  arg {
+    name: "axis"
+    i: 3
+  }
+}
+op {
+  input: "concatenate_1_concat_0"
+  output: "adjusted_input8"
+  name: "Transpose26"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input8"
+  input: "W8"
+  input: "B8"
+  output: "convolution_output8"
+  name: "_class__keras_layers_convolutional_Conv2D__6"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output8"
+  output: "activation_output8"
+  name: "Relu8"
+  type: "Relu"
+}
+op {
+  input: "activation_output8"
+  output: "conv2d_7_Relu_0_permuted_upsampled"
+  name: "Upsample1"
+  type: "ResizeNearest"
+  arg {
+    name: "scales"
+    floats: 1.0
+    floats: 1.0
+    floats: 2.0
+    floats: 2.0
+  }
+}
+op {
+  input: "conv2d_7_Relu_0_permuted_upsampled"
+  output: "up_sampling2d_2_ResizeNearestNeighbor_0"
+  name: "Transpose29"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+op {
+  input: "conv2d_8_Relu_0"
+  input: "up_sampling2d_2_ResizeNearestNeighbor_0"
+  output: "concatenate_2_concat_0"
+  output: "OC2_DUMMY_1"
+  name: "_class__keras_layers_merge_Concatenate__1"
+  type: "Concat"
+  arg {
+    name: "axis"
+    i: 3
+  }
+}
+op {
+  input: "concatenate_2_concat_0"
+  output: "adjusted_input9"
+  name: "Transpose30"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input9"
+  input: "W9"
+  input: "B9"
+  output: "convolution_output9"
+  name: "_class__keras_layers_convolutional_Conv2D__8"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output9"
+  output: "activation_output9"
+  name: "Relu9"
+  type: "Relu"
+}
+op {
+  input: "activation_output9"
+  output: "conv2d_9_Relu_0_permuted_upsampled"
+  name: "Upsample2"
+  type: "ResizeNearest"
+  arg {
+    name: "scales"
+    floats: 1.0
+    floats: 1.0
+    floats: 2.0
+    floats: 2.0
+  }
+}
+op {
+  input: "conv2d_9_Relu_0_permuted_upsampled"
+  output: "up_sampling2d_3_ResizeNearestNeighbor_0"
+  name: "Transpose33"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+op {
+  input: "conv2d_10_Relu_0"
+  input: "up_sampling2d_3_ResizeNearestNeighbor_0"
+  output: "concatenate_3_concat_0"
+  output: "OC2_DUMMY_2"
+  name: "_class__keras_layers_merge_Concatenate__2"
+  type: "Concat"
+  arg {
+    name: "axis"
+    i: 3
+  }
+}
+op {
+  input: "concatenate_3_concat_0"
+  output: "adjusted_input10"
+  name: "Transpose34"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 3
+    ints: 1
+    ints: 2
+  }
+}
+op {
+  input: "adjusted_input10"
+  input: "W10"
+  input: "B10"
+  output: "convolution_output10"
+  name: "_class__keras_layers_convolutional_Conv2D__10"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 1
+    ints: 1
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 3
+    ints: 3
+  }
+}
+op {
+  input: "convolution_output10"
+  output: "activation_output10"
+  name: "Relu10"
+  type: "Relu"
+}
+op {
+  input: "activation_output10"
+  output: "conv2d_11_Relu_0_permuted_upsampled"
+  name: "Upsample3"
+  type: "ResizeNearest"
+  arg {
+    name: "scales"
+    floats: 1.0
+    floats: 1.0
+    floats: 2.0
+    floats: 2.0
+  }
+}
+op {
+  input: "conv2d_11_Relu_0_permuted_upsampled"
+  input: "W11"
+  input: "B11"
+  output: "convolution_output11"
+  name: "_class__keras_layers_convolutional_Conv2D__11"
+  type: "Conv"
+  arg {
+    name: "dilations"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "strides"
+    ints: 1
+    ints: 1
+  }
+  arg {
+    name: "pads"
+    ints: 0
+    ints: 0
+    ints: 0
+    ints: 0
+  }
+  arg {
+    name: "group"
+    i: 1
+  }
+  arg {
+    name: "kernels"
+    ints: 1
+    ints: 1
+  }
+}
+op {
+  input: "convolution_output11"
+  output: "activation_output11"
+  name: "Sigmoid"
+  type: "Sigmoid"
+}
+op {
+  input: "activation_output11"
+  output: "conv2d_12_Sigmoid_01"
+  name: "Transpose39"
+  type: "Transpose"
+  arg {
+    name: "axes"
+    ints: 0
+    ints: 2
+    ints: 3
+    ints: 1
+  }
+}
+device_option {
+  device_type: 0
+  device_id: 0
+}
+external_input: "input_1_0"
+external_input: "W"
+external_input: "B"
+external_input: "W1"
+external_input: "B1"
+external_input: "W2"
+external_input: "B2"
+external_input: "W3"
+external_input: "B3"
+external_input: "W4"
+external_input: "B4"
+external_input: "W5"
+external_input: "B5"
+external_input: "W6"
+external_input: "B6"
+external_input: "W7"
+external_input: "B7"
+external_input: "W8"
+external_input: "B8"
+external_input: "W9"
+external_input: "B9"
+external_input: "W10"
+external_input: "B10"
+external_input: "W11"
+external_input: "B11"
+external_output: "conv2d_12_Sigmoid_01"
