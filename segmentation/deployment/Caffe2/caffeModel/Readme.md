@@ -21,8 +21,6 @@ mmconvert  --srcFramework keras --dstFramework caffe  -om test_model -iw ../test
 after installing mmconvert from master using pip3.
 
 
-
-
 pip3 install -U  git+https://github.com/Microsoft/MMdnn.git@master
 
 

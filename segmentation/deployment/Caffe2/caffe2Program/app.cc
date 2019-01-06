@@ -87,7 +87,7 @@ int run() {
   Workspace workspace("default");
   CAFFE_ENFORCE(workspace.RunNetOnce(init_net));
    
-  const char *  inputLayerName = "input_1_orig";
+  const char *  inputLayerName = "input_1_0";
 
   if(!workspace.HasBlob(inputLayerName)){
 	std::cout << "Unable to load input layer " << inputLayerName <<'\n';
