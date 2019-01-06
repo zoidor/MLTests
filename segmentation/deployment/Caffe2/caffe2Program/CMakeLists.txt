@@ -17,6 +17,7 @@ execute_process(COMMAND "python -c 'from distutils.sysconfig import get_python_i
 ExternalProject_Add(${PROJECT_NAME}-ext
   PREFIX ext
   GIT_REPOSITORY http://github.com/pytorch/pytorch.git
+  GIT_TAG b6a8c45f57b65d11894c4a6e5a3267708ecec1c5
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}
 
   CMAKE_ARGS    -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
