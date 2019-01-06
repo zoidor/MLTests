@@ -1,4 +1,0 @@
-mmconvert -sf keras -iw ../../../learning/test_model.h5 -df onnx -om test_model.onnx
-
-convert-onnx-to-caffe2 test_model.onnx --output test_model.pb --init-net-output init_net.pb
-

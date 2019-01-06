@@ -1,3 +1,5 @@
+Conversion tentative: KERAS -> Caffe -> Caffe2
+
 https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/graph_transforms#inspecting-graphs
 
 bazel build tensorflow/tools/graph_transforms:summarize_graph
@@ -30,4 +32,15 @@ pip3 install keras
 
 Note sudo-apt get install caffe-cpu installs only the python3 version and not the python2.7 version
  
+
+
+Converting from Keras -> Caffe OK!
+
+Converting from Caffe -> Caffe2 FAILURE! 
+When trying to use https://caffe2.ai/docs/caffe-migration.html#caffe-to-caffe2 I get:
+
+.......
+INFO:caffe_translator:Translate layer up_sampling2d_1
+.......
+NotImplementedError: Translator currently does not support group deconvolution.
 
