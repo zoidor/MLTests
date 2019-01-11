@@ -7,10 +7,10 @@
 
 #include <fstream>
 
-std::string init_net_fname{"data/init_net.pb"};
-std::string predict_net_fname{"data/test_model.pb"};
+std::string init_net_fname{"../data/init_net.pb"};
+std::string predict_net_fname{"../data/test_model.pb"};
 
-std::string file{"data/image.tif"};
+std::string file{"../data/image.tif"};
 
 const int cropped_input_height = 512;
 const int cropped_input_width = 688;
@@ -20,15 +20,6 @@ namespace {
 int run() {
 
   using namespace caffe2;
-  std::cout << std::endl;
-  std::cout << "## Caffe2 Loading Pre-Trained Models Tutorial ##" << std::endl;
-  std::cout << "https://caffe2.ai/docs/zoo.html" << std::endl;
-  std::cout << "https://caffe2.ai/docs/tutorial-loading-pre-trained-models.html"
-            << std::endl;
-  std::cout << "https://caffe2.ai/docs/tutorial-image-pre-processing.html"
-            << std::endl;
-  std::cout << std::endl;
-
   
   cv::Mat image = cv::imread(file, CV_LOAD_IMAGE_GRAYSCALE); 
   std::cout << "image size: " << image.size() << std::endl;
