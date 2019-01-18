@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 
 #Needed for accessing FindMKL needed by find_package(MKL QUIET)
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR}/ext/src/libTorch/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Modules)
 
 project(cpp_caffe2_segmentation)
 include(ExternalProject)
@@ -10,7 +10,7 @@ find_package(Protobuf REQUIRED)
 find_package(OpenCV REQUIRED)
 
 #Needed because cblas.h includes mkl_cblas.h if MKL is selected. And cblas.h spills into one of the main headers to include in the app  
-find_package(MKL QUIET)
+find_package(MKL)
 
 ExternalProject_Add(libTorch
   PREFIX ext

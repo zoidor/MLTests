@@ -18,7 +18,7 @@ const int cropped_input_width = 688;
 
 namespace {
 
-int save_tensor(const TensorCPU& tensor, const std::string& out_path){
+int save_tensor(const caffe2::TensorCPU& tensor, const std::string& out_path){
 
   const auto &probs = tensor.data<float>();
   
