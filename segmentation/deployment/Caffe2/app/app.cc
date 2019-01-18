@@ -11,11 +11,29 @@ std::string init_net_fname{"../data/init_net.pb"};
 std::string predict_net_fname{"../data/test_model.pb"};
 
 std::string file{"../data/image.tif"};
+std::string out_file{"../data/image_out.tif"};
 
 const int cropped_input_height = 512;
 const int cropped_input_width = 688;
 
 namespace {
+
+int save_tensor(const TensorCPU& tensor, const std::string& out_path){
+
+  const auto &probs = tensor.data<float>();
+  
+  cv::Mat image{cropped_input_height, cropped_input_width, CV_32FC1};
+  std::size_t i = 0;
+  for(int y = 0; y < image.rows; ++y) {
+    for (int x = 0; x < image.cols; ++x){
+	image.at<float>(y, x) = probs[i];
+	++i;
+    }
+  }
+
+  cv::imwrite(out_path, image);
+  return 0;
+}
 
 int run() {
 
@@ -101,19 +119,7 @@ int run() {
 	return -1;
    }
 
-  const auto &probs = output.data<float>();
-  
-  std::size_t i = 0;
-  for(int y = 0; y < image.rows; ++y) {
-    for (int x = 0; x < image.cols; ++x){
-	for(int channel = 0; channel < image.channels(); ++channel){
-		image.at<float>(y, x, channel) = probs[i];
-		++i;
-	}
-    }
-  }
-
-  return 0;
+  return save_tensor(output, out_file);
 }
 
 }  // anonymous namespace
