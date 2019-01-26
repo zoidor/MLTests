@@ -117,14 +117,74 @@ std::unique_ptr<tensorflow::Session> LoadGraph(const std::string& graph_file_nam
   return session;
 }
 
+class Predictor
+{
+	public:
+		Predictor(std::unique_ptr<tensorflow::Session> session) 
+		: m_session{std::move(session)}
+		{}	
+
+
+		tensorflow::Status inference(const std::string& png_file_path, tensorflow::Tensor& output){
+
+			if(!m_session)
+				return tensorflow::Status{tensorflow::error::Code::FAILED_PRECONDITION, 
+				  "Session was not created correctly"};
+
+			  // Get the image from disk as a float array of numbers, resized and normalized
+	  		  // to the specifications the main graph expects.
+			  tensorflow::Tensor resized_tensor;
+			  tensorflow::Status read_tensor_status =
+			  	ReadTensorFromPng(png_file_path, m_resized_input_height, m_resized_input_width, resized_tensor);
+				
+			 if(!read_tensor_status.ok())
+				return read_tensor_status;
+			 
+		
+			  // Actually run the image through the model.
+			  std::vector<tensorflow::Tensor> outputs;
+			  tensorflow::Status run_status = m_session->Run({{m_input_layer_name, resized_tensor}},
+						           {m_output_layer_name}, {}, &outputs);
+			  if (!run_status.ok()) {
+			  	return run_status;
+			  }
+
+			  output = outputs[0];
+
+			  if(output.dtype() != tensorflow::DT_FLOAT){
+				return tensorflow::Status{tensorflow::error::Code::INTERNAL, 
+				  "Output tensor of unexpected type"};
+			}
+
+			return tensorflow::Status::OK();
+		}
+	private:
+		std::unique_ptr<tensorflow::Session> m_session;	
+		std::string m_input_layer_name{"input_1"};
+		std::string m_output_layer_name{"activation_42/Softmax"};
+		int m_resized_input_height = 64;
+  		int m_resized_input_width = 64;
+
+};
+
+std::vector<std::string> get_images(const std::string& dir_path){
+
+	auto env = tensorflow::Env::Default();
+	std::vector<std::string> to_ret;
+
+	auto res = env->GetMatchingPaths(dir_path + "/*/*.png", &to_ret);
+	if(!res.ok()) return {};
+
+	return to_ret;
+}
+
 }//END anonymous namespace
 
 int main(int argc, char* argv[]) {
 
   const char* model_path = "application/data/malaria_model.pb";
-  const char* png_file_path = "application/data/images/Parasitized/C182P143NThinF_IMG_20151201_172607_cell_45.png";
-  const int resized_input_height = 64;
-  const int resized_input_width = 64;
+  const char* png_main_dir_path = "application/data/images";
+  
 
   if (argc == 0) {
     LOG(ERROR) << "Unable to detect executable name\n";
@@ -141,34 +201,33 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  // Get the image from disk as a float array of numbers, resized and normalized
-  // to the specifications the main graph expects.
-  tensorflow::Tensor resized_tensor;
-  tensorflow::Status read_tensor_status =
-          ReadTensorFromPng(png_file_path, resized_input_height , resized_input_width, resized_tensor);
+  Predictor pred{std::move(session)};
 
-  if (!read_tensor_status.ok()) {
-    LOG(ERROR) << read_tensor_status;
-    return -1;
+  auto png_paths = get_images(png_main_dir_path);
+
+  if(png_paths.empty()){
+	std::cout<<"Unable to find images for inference in directory "<<png_main_dir_path;
+	return -1;
   }
 
-  std::string input_layer{"input_1"};
-  std::string output_layer{"activation_42/Softmax"};
+  for(const auto& png_file_path : png_paths){
 
-  // Actually run the image through the model.
-  std::vector<tensorflow::Tensor> outputs;
-  tensorflow::Status run_status = session->Run({{input_layer, resized_tensor}},
-                                   {output_layer}, {}, &outputs);
-  if (!run_status.ok()) {
-    LOG(ERROR) << "Running model failed: " << run_status;
-    return -1;
-  }
+	  std::cout << png_file_path << ": ";
 
-  auto& output = outputs[0];
-
-  if(output.dtype() != tensorflow::DT_FLOAT){
-	std::cout<<"Unexpected type for output layer, aborting\n";
-	return -1; 
+  	  tensorflow::Tensor output;
+	  auto inference_status = pred.inference(png_file_path, output);
+	  
+	  if(!inference_status.ok()){
+		LOG(ERROR)<<"Image "<<  png_file_path << ", error: "<< inference_status;
+		return -1;
+	  }
+	  
+	  const float* data = output.flat<float>().data();
+	  
+	  for(int i = 0; i < output.NumElements(); ++i){
+		std::cout <<  data[i] <<' ';
+	  }  
+	  std::cout<<'\n';
   }
 
   return 0;
