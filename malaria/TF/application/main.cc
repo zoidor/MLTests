@@ -70,9 +70,11 @@ tensorflow::Status ReadTensorFromPng(const std::string& file_name, const int inp
   auto dims_expander = tensorflow::ops::ExpandDims(root, image_reader, 0);
   // Bilinearly resize the image to fit the required dimensions.
   auto resized = tensorflow::ops::ResizeBilinear(
-      root.WithOpName(output_name), dims_expander,
+      root, dims_expander,
       tensorflow::ops::Const(root.WithOpName("size"), {input_height, input_width}));
   
+  auto rescaled = tensorflow::ops::Div(root.WithOpName(output_name), resized, {255.0f});
+
   // This runs the GraphDef network definition that we've just constructed, and
   // returns the results in the output tensor.
   tensorflow::GraphDef graph;
