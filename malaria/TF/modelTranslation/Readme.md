@@ -1,7 +1,9 @@
-Conversion from keras to TF using mmconvert (https://github.com/Microsoft/MMdnn):
+The script allow for the translation of the Keras model into a binary TF model
+The layers are renamed
 
+input layer: input_0
+output layer: output_0
 
-mmconvert --srcFramework keras --inputWeight ../../kerasModel/malaria_model.h5 --dstFramework tensorflow -om tf_model
+The model is saved as tf_model_dir/malaria_model.pb 
 
-
-The model is then saved inside the tf_model directory
+The file is copied manually in the data directory of the bazel project
