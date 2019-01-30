@@ -14,9 +14,11 @@ tf_cc_binary(
         "//tensorflow/lite:framework",
         "//tensorflow/lite:string_util",
         "//tensorflow/lite/kernels:builtin_ops",
+        "//tensorflow/lite:builtin_op_data",
+	"@png_archive//:png",
     ],
 
-    linkopts = ["-lm -ltiff"],
+    linkopts = ["-lm"],
   
      data = ["data"],
 )

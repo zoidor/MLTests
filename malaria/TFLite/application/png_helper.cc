@@ -8,32 +8,13 @@
 #include "tensorflow/lite/interpreter.h"
 #include "tensorflow/lite/version.h"
 
-#include "tensorflow/core/lib/png/png_io.h"
+#include "png.h"
 
-#include <fstream>
 #include <memory>
+#include <cstdio>
 
 namespace{
 
-std::string read_all_png(const std::string& path){
-
-  int begin, end;
-
-  std::ifstream file(path, std::ios::in | std::ios::binary);
-  if (!file) {
-    return "";
-  }
-
-  begin = file.tellg();
-  file.seekg(0, std::ios::end);
-  end = file.tellg();
-  size_t len = end - begin;
-
-  std::string img_bytes(len, '\0');
-  file.seekg(0, std::ios::beg);
-  file.read(&img_bytes[0], len);
-  return img_bytes;
-}
 
 
 std::vector<float> resize(const std::vector<std::uint8_t>& in, const int image_height, const int image_width,
@@ -97,44 +78,79 @@ std::vector<float> resize(const std::vector<std::uint8_t>& in, const int image_h
   return out;
 }
 
+class fCloseGuard{
+	private:
+		FILE * fp;
+ 	public:
+		fCloseGuard(FILE * fp) : fp{fp}{}
+		~fCloseGuard(){fclose(fp);}
+};
+
+class pngPtrsGuard
+{
+	private:
+		png_structp& png;
+		png_infop& info;
+
+	public: 
+		pngPtrsGuard(png_structp& png, png_infop& info) : png{png}, info{info} {}
+		~pngPtrsGuard(){
+			if(!png) return;
+			png_destroy_read_struct(&png, info ? &info : nullptr, nullptr);
+		}
+
+};
+
 }//end anonymous namespace
 
 
 
 std::vector<float> malaria::read_png_and_resize(const std::string& path, const int wanted_height, const int wanted_width, const int wanted_channels){
+  
+  FILE *fp = fopen(path.c_str(), "rb");
 
- auto input = read_all_png(path);
+  fCloseGuard guard(fp);
 
- if(input.empty()) return {};
+  png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_infop info = nullptr;
 
- tensorflow::png::DecodeContext decode;
- const int wanted_num_bits = 8;
+  if(!png) return{};
 
- if(!tensorflow::png::CommonInitDecode(input, wanted_channels, wanted_num_bits, &decode)){
-	tensorflow::png::CommonFreeDecode(&decode);
-	return {};
- }
+  pngPtrsGuard pngPtrsGrd{png, info};
 
- const int width = static_cast<int>(decode.width);
- const int height = static_cast<int>(decode.height);
- const std::int64_t total_size =
-        static_cast<std::int64_t>(width) * static_cast<std::int64_t>(height);
-    
- if (width != static_cast<std::int64_t>(decode.width) || width <= 0 ||
-        width >= (1LL << 27) || height != static_cast<std::int64_t>(decode.height) ||
-        height <= 0 || height >= (1LL << 27) || total_size >= (1LL << 29)) {
-      return {}; //image too big
- }
+  info = png_create_info_struct(png);
+  if(!info) return{};
 
- const int num_pixels = decode.channels * width * height;
- std::vector<std::uint8_t> out8(static_cast<std::size_t>(num_pixels));
- const int row_bytes = decode.channels * width * sizeof(std::uint8_t);
- 
- if(!tensorflow::png::CommonFinishDecode(
-              reinterpret_cast<png_bytep>(out8.data()),
-              row_bytes, &decode))
-	return {};
+  if(setjmp(png_jmpbuf(png))) return{};
 
- return resize(out8, height, width, wanted_channels, wanted_height, wanted_width, wanted_channels);
+  png_init_io(png, fp);
 
+  png_read_info(png, info);
+
+  const int width           = png_get_image_width(png, info);
+  const int height          = png_get_image_height(png, info);
+  const png_byte color_type = png_get_color_type(png, info);
+  const png_byte bit_depth  = png_get_bit_depth(png, info);
+  const int channels        = png_get_channels(png, info);
+
+  if(bit_depth != 8 || channels != 3)
+    return {};
+
+
+  if(color_type != PNG_COLOR_TYPE_RGB)
+    return{};
+
+  png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
+
+  png_read_update_info(png, info);
+
+  auto row_bytes = png_get_rowbytes(png,info);
+  std::vector<std::uint8_t> out8(height * row_bytes);
+  
+  auto row = out8.data();
+  for (int h = height; h-- != 0; row += row_bytes) {
+	png_read_row(png, row, nullptr);
+  }
+  
+  return resize(out8, height, width, wanted_channels, wanted_height, wanted_width, wanted_channels);
 }
