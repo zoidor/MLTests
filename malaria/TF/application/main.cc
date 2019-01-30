@@ -63,13 +63,16 @@ tensorflow::Status ReadTensorFromPng(const std::string& file_name, const int inp
   image_reader = tensorflow::ops::DecodePng(root.WithOpName("png_reader"), file_reader,
                      tensorflow::ops::DecodePng::Channels(wanted_channels));
 
+  auto image_reader_float = tensorflow::ops::Cast(root.WithOpName("float_caster"), 
+						  image_reader, tensorflow::DT_FLOAT);
+
   // The convention for image ops in TensorFlow is that all images are expected
   // to be in batches, so that they're four-dimensional arrays with indices of
   // [batch, height, width, channel]. Because we only have a single image, we
   // have to add a batch dimension of 1 to the start with ExpandDims().
-  auto dims_expander = tensorflow::ops::ExpandDims(root, image_reader, 0);
+  auto dims_expander = tensorflow::ops::ExpandDims(root, image_reader_float, 0);
   // Bilinearly resize the image to fit the required dimensions.
-  auto resized = tensorflow::ops::ResizeBilinear(
+  auto resized = tensorflow::ops::ResizeNearestNeighbor(
       root, dims_expander,
       tensorflow::ops::Const(root.WithOpName("size"), {input_height, input_width}));
   
