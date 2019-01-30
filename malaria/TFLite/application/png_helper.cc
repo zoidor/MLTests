@@ -76,7 +76,7 @@ std::vector<float> resize(const std::vector<std::uint8_t>& in, const int image_h
   std::vector<float> out;
   out.reserve(output_number_of_pixels);
   for (int i = 0; i < output_number_of_pixels; i++) {
-  	out.push_back(output[i] / 255.0);
+  	out.push_back(output[i] / 255.0f);
   }
   return out;
 }
