@@ -5,13 +5,13 @@
 
 #include "png_helper.h"
 
-#include <iostream>
 #include <iterator>
+#include <iostream>
 		
-const char* model_path = "application/data/test_model_tensorflow.pb";
-const char* png_file_path = "segmentation/data/image.tif";
-const int cropped_input_width = 64;
-const int cropped_input_height = 64;
+const char* model_path = "application/data/malaria_model.tflite";
+const char* png_file_path = "application/data/images/Parasitized/C68P29N_ThinF_IMG_20150819_134326_cell_115.png";
+const int resized_input_width = 64;
+const int resized_input_height = 64;
 const bool useNNAPI = true;
 const bool verbose = true;
 const int number_of_threads = 4;
@@ -67,10 +67,10 @@ void RunInference() {
     interpreter->SetNumThreads(number_of_threads);
   }
 
-  auto in = malaria::read_png_and_resize(png_file_path, cropped_input_height, cropped_input_width, 3);
+  auto in = malaria::read_png_and_resize(png_file_path, resized_input_height, resized_input_width, 3);
 
-  if(in.empty()){
-    LOG(INFO) << "unable to read: " << png_file_path << "\n";
+  if(in.size() != (resized_input_width * resized_input_height * 3)){
+    LOG(INFO) << "Wrong number of bytes for " << png_file_path << ", got "<< in.size() << " bytes \n";
     exit(-1);
   }
 
@@ -99,12 +99,12 @@ void RunInference() {
   const int wanted_width = dims->data[2];
   const int wanted_channels = dims->data[3];
 
-  if(wanted_height != cropped_input_height){
+  if(wanted_height != resized_input_height){
 	LOG(ERR) << "Height does not match";
         exit(-1);
   }
 
-  if(wanted_width != cropped_input_width){
+  if(wanted_width != resized_input_width){
 	LOG(ERR) << "Width does not match";
         exit(-1);
   }
@@ -128,7 +128,7 @@ void RunInference() {
   
   // assume output dims to be something like (1, 1, ... ,size)
   auto output_size = output_dims->data[output_dims->size - 1];
-  
+  std::cout << "Output size " << output_size << "\n";
 }
 
 

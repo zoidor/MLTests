@@ -15,8 +15,6 @@
 
 namespace{
 
-
-
 std::vector<float> resize(const std::vector<std::uint8_t>& in, const int image_height, const int image_width,
             const int image_channels, const int wanted_height, const int wanted_width,
             const int wanted_channels) {
@@ -48,8 +46,13 @@ std::vector<float> resize(const std::vector<std::uint8_t>& in, const int image_h
   tflite::ops::builtin::BuiltinOpResolver resolver;
   const TfLiteRegistration* resize_op =
       resolver.FindOp(tflite::BuiltinOperator_RESIZE_NEAREST_NEIGHBOR, 1);
-  TfLiteResizeNearestNeighborParams op_params{false};
-  interpreter->AddNodeWithParameters({0, 1}, {2}, nullptr, 0, &op_params, resize_op,
+  
+  if(!resize_op)
+	return{};
+
+  auto op_params = static_cast<TfLiteResizeNearestNeighborParams*>(malloc(sizeof(TfLiteResizeNearestNeighborParams)));
+  op_params->align_corners = false;
+  interpreter->AddNodeWithParameters({0, 1}, {2}, nullptr, 0, op_params, resize_op,
                                      nullptr);
 
   interpreter->AllocateTensors();
@@ -124,7 +127,6 @@ std::vector<float> malaria::read_png_and_resize(const std::string& path, const i
   if(setjmp(png_jmpbuf(png))) return{};
 
   png_init_io(png, fp);
-
   png_read_info(png, info);
 
   const int width           = png_get_image_width(png, info);
@@ -136,21 +138,16 @@ std::vector<float> malaria::read_png_and_resize(const std::string& path, const i
   if(bit_depth != 8 || channels != 3)
     return {};
 
-
   if(color_type != PNG_COLOR_TYPE_RGB)
     return{};
 
-  png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
-
-  png_read_update_info(png, info);
-
-  auto row_bytes = png_get_rowbytes(png,info);
+  auto row_bytes = png_get_rowbytes(png, info);
   std::vector<std::uint8_t> out8(height * row_bytes);
   
   auto row = out8.data();
   for (int h = height; h-- != 0; row += row_bytes) {
 	png_read_row(png, row, nullptr);
   }
-  
+
   return resize(out8, height, width, wanted_channels, wanted_height, wanted_width, wanted_channels);
 }
