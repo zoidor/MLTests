@@ -1,19 +1,12 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/dnn.hpp>
+#include <opencv2/core/utils/filesystem.hpp>
 
 #include <vector>
 #include <iostream>
 
 namespace{
-
-const char* model_path = "../data/malaria_model.pb";
-const char* png_main_dir_path = "../data/images";
-
-//const char* input_layer_name = "input_1";
-const char* output_layer_name = "activation_42/Softmax";
-const int resized_input_height = 64;
-const int resized_input_width = 64;  
 
 cv::Mat resize(const cv::Mat& img, const int n_cols, const int n_rows){
 
@@ -22,7 +15,7 @@ cv::Mat resize(const cv::Mat& img, const int n_cols, const int n_rows){
 	return out_img;
 }
 
-cv::Mat readImage(const std::string& path){
+cv::Mat readImageAndResize(const std::string& path, const int resized_input_height = 64, const int resized_input_width = 64){
 
   cv::Mat image = cv::imread(path); 
 
@@ -47,31 +40,44 @@ cv::Mat readImage(const std::string& path){
   return image;
 }
 
+std::vector<std::string> get_paths(const std::string& base_path){
+	std::vector<std::string> out;
+	const bool recursive = true;
+	cv::utils::fs::glob(base_path, "*.png", out, recursive);
+	return out;
+}
+
 } //end anonymous namespace
 
 int main(){
 
-  auto net = cv::dnn::readNet(model_path);
-  
+  const char* model_path = "../data/malaria_model.pb";
+  const char* model_txt_path = "../data/malaria_model.pbtxt";
+  const char* output_layer_name = "activation_42/Softmax";
+  const char* png_main_dir_path = "../data/images";
 
-  auto img = readImage(png_main_dir_path);
-  if(img.cols == 0 || img.rows == 0)
-	return -1;
-
-  auto blob = cv::dnn::blobFromImage(img);
-
-  net.setInput(blob);
-  
-  std::vector<cv::Mat> output;
+  auto net = cv::dnn::readNetFromTensorflow(model_path, model_txt_path);
   std::vector<std::string> outputLayers{output_layer_name};
-  net.forward(output, outputLayers);
-  
-  if(output.size() != 1)
-	return -1;
 
-  if(output[0].total() != 2)
-	return -1;
+  for(const auto& path : get_paths(png_main_dir_path)){
+	  
+	  auto img = readImageAndResize(path);
+	  if(img.cols == 0 || img.rows == 0)
+		return -1;
 
-  std::cout << output[0].at<float>(0) << " " << output[0].at<float>(1) <<'\n';
+	  auto blob = cv::dnn::blobFromImage(img);
+
+	  net.setInput(blob);
+	  
+	  std::vector<cv::Mat> output;
+	  net.forward(output, outputLayers);
+	  
+	  if(output.size() != 1)
+		return -1;
+
+	  if(output[0].total() != 2)
+		return -1;
+
+	  std::cout << path << ' ' << output[0].at<float>(0) << " " << output[0].at<float>(1) <<'\n';
+  }
 }
-

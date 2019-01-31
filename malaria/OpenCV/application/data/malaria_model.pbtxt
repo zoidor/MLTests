@@ -1,0 +1,5281 @@
+node {
+  name: "input_1"
+  op: "Placeholder"
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "shape"
+    value {
+      shape {
+        dim {
+          size: -1
+        }
+        dim {
+          size: 64
+        }
+        dim {
+          size: 64
+        }
+        dim {
+          size: 3
+        }
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_1/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_1/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_1/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_1/beta/read"
+  op: "Identity"
+  input: "batch_normalization_1/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_1/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_1/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_1/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_1/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_1/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_1/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_1/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_1/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "input_1"
+  input: "batch_normalization_1/gamma/read"
+  input: "batch_normalization_1/beta/read"
+  input: "batch_normalization_1/moving_mean/read"
+  input: "batch_normalization_1/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "conv2d_1/kernel/read"
+  op: "Identity"
+  input: "conv2d_1/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_1/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_1/convolution"
+  op: "Conv2D"
+  input: "batch_normalization_1/FusedBatchNorm_1"
+  input: "conv2d_1/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_2/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_2/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_2/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_2/beta/read"
+  op: "Identity"
+  input: "batch_normalization_2/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_2/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_2/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_2/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_2/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_2/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_2/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_2/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_2/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_1/convolution"
+  input: "batch_normalization_2/gamma/read"
+  input: "batch_normalization_2/beta/read"
+  input: "batch_normalization_2/moving_mean/read"
+  input: "batch_normalization_2/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_1/Relu"
+  op: "Relu"
+  input: "batch_normalization_2/FusedBatchNorm_1"
+}
+node {
+  name: "zero_padding2d_1/Pad"
+  op: "Pad"
+  input: "activation_1/Relu"
+  input: "zero_padding2d_1/Pad/paddings"
+}
+node {
+  name: "max_pooling2d_1/MaxPool"
+  op: "MaxPool"
+  input: "zero_padding2d_1/Pad"
+  attr {
+    key: "ksize"
+    value {
+      list {
+        i: 1
+        i: 3
+        i: 3
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_3/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_3/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_3/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_3/beta/read"
+  op: "Identity"
+  input: "batch_normalization_3/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_3/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_3/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_3/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_3/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_3/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_3/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_3/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_3/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "max_pooling2d_1/MaxPool"
+  input: "batch_normalization_3/gamma/read"
+  input: "batch_normalization_3/beta/read"
+  input: "batch_normalization_3/moving_mean/read"
+  input: "batch_normalization_3/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_2/Relu"
+  op: "Relu"
+  input: "batch_normalization_3/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_2/kernel/read"
+  op: "Identity"
+  input: "conv2d_2/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_2/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_2/convolution"
+  op: "Conv2D"
+  input: "activation_2/Relu"
+  input: "conv2d_2/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_4/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_4/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_4/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_4/beta/read"
+  op: "Identity"
+  input: "batch_normalization_4/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_4/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_4/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_4/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_4/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_4/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_4/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_4/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_4/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_2/convolution"
+  input: "batch_normalization_4/gamma/read"
+  input: "batch_normalization_4/beta/read"
+  input: "batch_normalization_4/moving_mean/read"
+  input: "batch_normalization_4/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_3/Relu"
+  op: "Relu"
+  input: "batch_normalization_4/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_3/kernel/read"
+  op: "Identity"
+  input: "conv2d_3/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_3/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_3/convolution"
+  op: "Conv2D"
+  input: "activation_3/Relu"
+  input: "conv2d_3/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_5/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_5/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_5/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_5/beta/read"
+  op: "Identity"
+  input: "batch_normalization_5/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_5/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_5/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_5/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_5/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_5/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_5/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_5/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_5/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_3/convolution"
+  input: "batch_normalization_5/gamma/read"
+  input: "batch_normalization_5/beta/read"
+  input: "batch_normalization_5/moving_mean/read"
+  input: "batch_normalization_5/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_4/Relu"
+  op: "Relu"
+  input: "batch_normalization_5/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_4/kernel/read"
+  op: "Identity"
+  input: "conv2d_4/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_4/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_4/convolution"
+  op: "Conv2D"
+  input: "activation_4/Relu"
+  input: "conv2d_4/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_5/kernel/read"
+  op: "Identity"
+  input: "conv2d_5/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_5/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_5/convolution"
+  op: "Conv2D"
+  input: "activation_2/Relu"
+  input: "conv2d_5/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_1/add"
+  op: "Add"
+  input: "conv2d_4/convolution"
+  input: "conv2d_5/convolution"
+}
+node {
+  name: "batch_normalization_6/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_6/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_6/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_6/beta/read"
+  op: "Identity"
+  input: "batch_normalization_6/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_6/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_6/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_6/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_6/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_6/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_6/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_6/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_6/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_1/add"
+  input: "batch_normalization_6/gamma/read"
+  input: "batch_normalization_6/beta/read"
+  input: "batch_normalization_6/moving_mean/read"
+  input: "batch_normalization_6/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_5/Relu"
+  op: "Relu"
+  input: "batch_normalization_6/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_6/kernel/read"
+  op: "Identity"
+  input: "conv2d_6/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_6/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_6/convolution"
+  op: "Conv2D"
+  input: "activation_5/Relu"
+  input: "conv2d_6/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_7/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_7/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_7/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_7/beta/read"
+  op: "Identity"
+  input: "batch_normalization_7/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_7/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_7/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_7/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_7/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_7/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_7/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_7/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_7/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_6/convolution"
+  input: "batch_normalization_7/gamma/read"
+  input: "batch_normalization_7/beta/read"
+  input: "batch_normalization_7/moving_mean/read"
+  input: "batch_normalization_7/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_6/Relu"
+  op: "Relu"
+  input: "batch_normalization_7/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_7/kernel/read"
+  op: "Identity"
+  input: "conv2d_7/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_7/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_7/convolution"
+  op: "Conv2D"
+  input: "activation_6/Relu"
+  input: "conv2d_7/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_8/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_8/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_8/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_8/beta/read"
+  op: "Identity"
+  input: "batch_normalization_8/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_8/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_8/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_8/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_8/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_8/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_8/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_8/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_8/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_7/convolution"
+  input: "batch_normalization_8/gamma/read"
+  input: "batch_normalization_8/beta/read"
+  input: "batch_normalization_8/moving_mean/read"
+  input: "batch_normalization_8/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_7/Relu"
+  op: "Relu"
+  input: "batch_normalization_8/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_8/kernel/read"
+  op: "Identity"
+  input: "conv2d_8/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_8/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_8/convolution"
+  op: "Conv2D"
+  input: "activation_7/Relu"
+  input: "conv2d_8/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_2/add"
+  op: "Add"
+  input: "conv2d_8/convolution"
+  input: "add_1/add"
+}
+node {
+  name: "batch_normalization_9/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_9/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_9/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_9/beta/read"
+  op: "Identity"
+  input: "batch_normalization_9/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_9/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_9/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_9/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_9/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_9/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_9/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_9/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_9/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_2/add"
+  input: "batch_normalization_9/gamma/read"
+  input: "batch_normalization_9/beta/read"
+  input: "batch_normalization_9/moving_mean/read"
+  input: "batch_normalization_9/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_8/Relu"
+  op: "Relu"
+  input: "batch_normalization_9/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_9/kernel/read"
+  op: "Identity"
+  input: "conv2d_9/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_9/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_9/convolution"
+  op: "Conv2D"
+  input: "activation_8/Relu"
+  input: "conv2d_9/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_10/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_10/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_10/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_10/beta/read"
+  op: "Identity"
+  input: "batch_normalization_10/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_10/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_10/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_10/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_10/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_10/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_10/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_10/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_10/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_9/convolution"
+  input: "batch_normalization_10/gamma/read"
+  input: "batch_normalization_10/beta/read"
+  input: "batch_normalization_10/moving_mean/read"
+  input: "batch_normalization_10/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_9/Relu"
+  op: "Relu"
+  input: "batch_normalization_10/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_10/kernel/read"
+  op: "Identity"
+  input: "conv2d_10/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_10/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_10/convolution"
+  op: "Conv2D"
+  input: "activation_9/Relu"
+  input: "conv2d_10/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_11/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_11/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_11/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_11/beta/read"
+  op: "Identity"
+  input: "batch_normalization_11/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_11/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_11/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_11/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_11/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_11/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_11/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_11/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_11/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_10/convolution"
+  input: "batch_normalization_11/gamma/read"
+  input: "batch_normalization_11/beta/read"
+  input: "batch_normalization_11/moving_mean/read"
+  input: "batch_normalization_11/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_10/Relu"
+  op: "Relu"
+  input: "batch_normalization_11/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_11/kernel/read"
+  op: "Identity"
+  input: "conv2d_11/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_11/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_11/convolution"
+  op: "Conv2D"
+  input: "activation_10/Relu"
+  input: "conv2d_11/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_3/add"
+  op: "Add"
+  input: "conv2d_11/convolution"
+  input: "add_2/add"
+}
+node {
+  name: "batch_normalization_12/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_12/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_12/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_12/beta/read"
+  op: "Identity"
+  input: "batch_normalization_12/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_12/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_12/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_12/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_12/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_12/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_12/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_12/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_12/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_3/add"
+  input: "batch_normalization_12/gamma/read"
+  input: "batch_normalization_12/beta/read"
+  input: "batch_normalization_12/moving_mean/read"
+  input: "batch_normalization_12/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_11/Relu"
+  op: "Relu"
+  input: "batch_normalization_12/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_12/kernel/read"
+  op: "Identity"
+  input: "conv2d_12/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_12/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_12/convolution"
+  op: "Conv2D"
+  input: "activation_11/Relu"
+  input: "conv2d_12/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_13/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_13/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_13/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_13/beta/read"
+  op: "Identity"
+  input: "batch_normalization_13/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_13/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_13/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_13/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_13/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_13/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_13/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_13/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_13/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_12/convolution"
+  input: "batch_normalization_13/gamma/read"
+  input: "batch_normalization_13/beta/read"
+  input: "batch_normalization_13/moving_mean/read"
+  input: "batch_normalization_13/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_12/Relu"
+  op: "Relu"
+  input: "batch_normalization_13/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_13/kernel/read"
+  op: "Identity"
+  input: "conv2d_13/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_13/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_13/convolution"
+  op: "Conv2D"
+  input: "activation_12/Relu"
+  input: "conv2d_13/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_14/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_14/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_14/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_14/beta/read"
+  op: "Identity"
+  input: "batch_normalization_14/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_14/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_14/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_14/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_14/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_14/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_14/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_14/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_14/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_13/convolution"
+  input: "batch_normalization_14/gamma/read"
+  input: "batch_normalization_14/beta/read"
+  input: "batch_normalization_14/moving_mean/read"
+  input: "batch_normalization_14/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_13/Relu"
+  op: "Relu"
+  input: "batch_normalization_14/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_14/kernel/read"
+  op: "Identity"
+  input: "conv2d_14/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_14/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_14/convolution"
+  op: "Conv2D"
+  input: "activation_13/Relu"
+  input: "conv2d_14/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_15/kernel/read"
+  op: "Identity"
+  input: "conv2d_15/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_15/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_15/convolution"
+  op: "Conv2D"
+  input: "activation_11/Relu"
+  input: "conv2d_15/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_4/add"
+  op: "Add"
+  input: "conv2d_14/convolution"
+  input: "conv2d_15/convolution"
+}
+node {
+  name: "batch_normalization_15/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_15/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_15/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_15/beta/read"
+  op: "Identity"
+  input: "batch_normalization_15/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_15/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_15/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_15/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_15/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_15/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_15/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_15/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_15/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_4/add"
+  input: "batch_normalization_15/gamma/read"
+  input: "batch_normalization_15/beta/read"
+  input: "batch_normalization_15/moving_mean/read"
+  input: "batch_normalization_15/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_14/Relu"
+  op: "Relu"
+  input: "batch_normalization_15/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_16/kernel/read"
+  op: "Identity"
+  input: "conv2d_16/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_16/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_16/convolution"
+  op: "Conv2D"
+  input: "activation_14/Relu"
+  input: "conv2d_16/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_16/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_16/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_16/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_16/beta/read"
+  op: "Identity"
+  input: "batch_normalization_16/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_16/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_16/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_16/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_16/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_16/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_16/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_16/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_16/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_16/convolution"
+  input: "batch_normalization_16/gamma/read"
+  input: "batch_normalization_16/beta/read"
+  input: "batch_normalization_16/moving_mean/read"
+  input: "batch_normalization_16/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_15/Relu"
+  op: "Relu"
+  input: "batch_normalization_16/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_17/kernel/read"
+  op: "Identity"
+  input: "conv2d_17/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_17/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_17/convolution"
+  op: "Conv2D"
+  input: "activation_15/Relu"
+  input: "conv2d_17/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_17/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_17/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_17/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_17/beta/read"
+  op: "Identity"
+  input: "batch_normalization_17/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_17/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_17/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_17/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_17/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_17/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_17/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_17/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_17/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_17/convolution"
+  input: "batch_normalization_17/gamma/read"
+  input: "batch_normalization_17/beta/read"
+  input: "batch_normalization_17/moving_mean/read"
+  input: "batch_normalization_17/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_16/Relu"
+  op: "Relu"
+  input: "batch_normalization_17/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_18/kernel/read"
+  op: "Identity"
+  input: "conv2d_18/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_18/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_18/convolution"
+  op: "Conv2D"
+  input: "activation_16/Relu"
+  input: "conv2d_18/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_5/add"
+  op: "Add"
+  input: "conv2d_18/convolution"
+  input: "add_4/add"
+}
+node {
+  name: "batch_normalization_18/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_18/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_18/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_18/beta/read"
+  op: "Identity"
+  input: "batch_normalization_18/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_18/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_18/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_18/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_18/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_18/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_18/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_18/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_18/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_5/add"
+  input: "batch_normalization_18/gamma/read"
+  input: "batch_normalization_18/beta/read"
+  input: "batch_normalization_18/moving_mean/read"
+  input: "batch_normalization_18/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_17/Relu"
+  op: "Relu"
+  input: "batch_normalization_18/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_19/kernel/read"
+  op: "Identity"
+  input: "conv2d_19/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_19/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_19/convolution"
+  op: "Conv2D"
+  input: "activation_17/Relu"
+  input: "conv2d_19/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_19/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_19/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_19/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_19/beta/read"
+  op: "Identity"
+  input: "batch_normalization_19/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_19/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_19/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_19/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_19/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_19/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_19/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_19/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_19/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_19/convolution"
+  input: "batch_normalization_19/gamma/read"
+  input: "batch_normalization_19/beta/read"
+  input: "batch_normalization_19/moving_mean/read"
+  input: "batch_normalization_19/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_18/Relu"
+  op: "Relu"
+  input: "batch_normalization_19/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_20/kernel/read"
+  op: "Identity"
+  input: "conv2d_20/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_20/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_20/convolution"
+  op: "Conv2D"
+  input: "activation_18/Relu"
+  input: "conv2d_20/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_20/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_20/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_20/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_20/beta/read"
+  op: "Identity"
+  input: "batch_normalization_20/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_20/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_20/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_20/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_20/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_20/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_20/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_20/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_20/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_20/convolution"
+  input: "batch_normalization_20/gamma/read"
+  input: "batch_normalization_20/beta/read"
+  input: "batch_normalization_20/moving_mean/read"
+  input: "batch_normalization_20/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_19/Relu"
+  op: "Relu"
+  input: "batch_normalization_20/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_21/kernel/read"
+  op: "Identity"
+  input: "conv2d_21/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_21/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_21/convolution"
+  op: "Conv2D"
+  input: "activation_19/Relu"
+  input: "conv2d_21/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_6/add"
+  op: "Add"
+  input: "conv2d_21/convolution"
+  input: "add_5/add"
+}
+node {
+  name: "batch_normalization_21/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_21/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_21/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_21/beta/read"
+  op: "Identity"
+  input: "batch_normalization_21/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_21/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_21/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_21/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_21/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_21/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_21/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_21/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_21/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_6/add"
+  input: "batch_normalization_21/gamma/read"
+  input: "batch_normalization_21/beta/read"
+  input: "batch_normalization_21/moving_mean/read"
+  input: "batch_normalization_21/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_20/Relu"
+  op: "Relu"
+  input: "batch_normalization_21/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_22/kernel/read"
+  op: "Identity"
+  input: "conv2d_22/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_22/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_22/convolution"
+  op: "Conv2D"
+  input: "activation_20/Relu"
+  input: "conv2d_22/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_22/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_22/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_22/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_22/beta/read"
+  op: "Identity"
+  input: "batch_normalization_22/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_22/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_22/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_22/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_22/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_22/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_22/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_22/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_22/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_22/convolution"
+  input: "batch_normalization_22/gamma/read"
+  input: "batch_normalization_22/beta/read"
+  input: "batch_normalization_22/moving_mean/read"
+  input: "batch_normalization_22/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_21/Relu"
+  op: "Relu"
+  input: "batch_normalization_22/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_23/kernel/read"
+  op: "Identity"
+  input: "conv2d_23/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_23/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_23/convolution"
+  op: "Conv2D"
+  input: "activation_21/Relu"
+  input: "conv2d_23/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_23/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_23/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_23/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_23/beta/read"
+  op: "Identity"
+  input: "batch_normalization_23/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_23/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_23/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_23/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_23/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_23/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_23/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_23/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_23/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_23/convolution"
+  input: "batch_normalization_23/gamma/read"
+  input: "batch_normalization_23/beta/read"
+  input: "batch_normalization_23/moving_mean/read"
+  input: "batch_normalization_23/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_22/Relu"
+  op: "Relu"
+  input: "batch_normalization_23/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_24/kernel/read"
+  op: "Identity"
+  input: "conv2d_24/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_24/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_24/convolution"
+  op: "Conv2D"
+  input: "activation_22/Relu"
+  input: "conv2d_24/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_7/add"
+  op: "Add"
+  input: "conv2d_24/convolution"
+  input: "add_6/add"
+}
+node {
+  name: "batch_normalization_24/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_24/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_24/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_24/beta/read"
+  op: "Identity"
+  input: "batch_normalization_24/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_24/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_24/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_24/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_24/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_24/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_24/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_24/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_24/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_7/add"
+  input: "batch_normalization_24/gamma/read"
+  input: "batch_normalization_24/beta/read"
+  input: "batch_normalization_24/moving_mean/read"
+  input: "batch_normalization_24/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_23/Relu"
+  op: "Relu"
+  input: "batch_normalization_24/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_25/kernel/read"
+  op: "Identity"
+  input: "conv2d_25/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_25/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_25/convolution"
+  op: "Conv2D"
+  input: "activation_23/Relu"
+  input: "conv2d_25/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_25/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_25/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_25/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_25/beta/read"
+  op: "Identity"
+  input: "batch_normalization_25/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_25/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_25/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_25/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_25/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_25/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_25/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_25/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_25/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_25/convolution"
+  input: "batch_normalization_25/gamma/read"
+  input: "batch_normalization_25/beta/read"
+  input: "batch_normalization_25/moving_mean/read"
+  input: "batch_normalization_25/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_24/Relu"
+  op: "Relu"
+  input: "batch_normalization_25/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_26/kernel/read"
+  op: "Identity"
+  input: "conv2d_26/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_26/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_26/convolution"
+  op: "Conv2D"
+  input: "activation_24/Relu"
+  input: "conv2d_26/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_26/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_26/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_26/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_26/beta/read"
+  op: "Identity"
+  input: "batch_normalization_26/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_26/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_26/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_26/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_26/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_26/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_26/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_26/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_26/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_26/convolution"
+  input: "batch_normalization_26/gamma/read"
+  input: "batch_normalization_26/beta/read"
+  input: "batch_normalization_26/moving_mean/read"
+  input: "batch_normalization_26/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_25/Relu"
+  op: "Relu"
+  input: "batch_normalization_26/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_27/kernel/read"
+  op: "Identity"
+  input: "conv2d_27/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_27/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_27/convolution"
+  op: "Conv2D"
+  input: "activation_25/Relu"
+  input: "conv2d_27/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_28/kernel/read"
+  op: "Identity"
+  input: "conv2d_28/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_28/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_28/convolution"
+  op: "Conv2D"
+  input: "activation_23/Relu"
+  input: "conv2d_28/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 2
+        i: 2
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_8/add"
+  op: "Add"
+  input: "conv2d_27/convolution"
+  input: "conv2d_28/convolution"
+}
+node {
+  name: "batch_normalization_27/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_27/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_27/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_27/beta/read"
+  op: "Identity"
+  input: "batch_normalization_27/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_27/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_27/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_27/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_27/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_27/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_27/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_27/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_27/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_8/add"
+  input: "batch_normalization_27/gamma/read"
+  input: "batch_normalization_27/beta/read"
+  input: "batch_normalization_27/moving_mean/read"
+  input: "batch_normalization_27/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_26/Relu"
+  op: "Relu"
+  input: "batch_normalization_27/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_29/kernel/read"
+  op: "Identity"
+  input: "conv2d_29/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_29/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_29/convolution"
+  op: "Conv2D"
+  input: "activation_26/Relu"
+  input: "conv2d_29/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_28/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_28/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_28/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_28/beta/read"
+  op: "Identity"
+  input: "batch_normalization_28/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_28/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_28/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_28/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_28/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_28/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_28/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_28/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_28/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_29/convolution"
+  input: "batch_normalization_28/gamma/read"
+  input: "batch_normalization_28/beta/read"
+  input: "batch_normalization_28/moving_mean/read"
+  input: "batch_normalization_28/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_27/Relu"
+  op: "Relu"
+  input: "batch_normalization_28/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_30/kernel/read"
+  op: "Identity"
+  input: "conv2d_30/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_30/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_30/convolution"
+  op: "Conv2D"
+  input: "activation_27/Relu"
+  input: "conv2d_30/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_29/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_29/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_29/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_29/beta/read"
+  op: "Identity"
+  input: "batch_normalization_29/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_29/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_29/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_29/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_29/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_29/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_29/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_29/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_29/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_30/convolution"
+  input: "batch_normalization_29/gamma/read"
+  input: "batch_normalization_29/beta/read"
+  input: "batch_normalization_29/moving_mean/read"
+  input: "batch_normalization_29/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_28/Relu"
+  op: "Relu"
+  input: "batch_normalization_29/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_31/kernel/read"
+  op: "Identity"
+  input: "conv2d_31/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_31/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_31/convolution"
+  op: "Conv2D"
+  input: "activation_28/Relu"
+  input: "conv2d_31/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_9/add"
+  op: "Add"
+  input: "conv2d_31/convolution"
+  input: "add_8/add"
+}
+node {
+  name: "batch_normalization_30/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_30/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_30/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_30/beta/read"
+  op: "Identity"
+  input: "batch_normalization_30/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_30/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_30/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_30/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_30/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_30/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_30/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_30/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_30/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_9/add"
+  input: "batch_normalization_30/gamma/read"
+  input: "batch_normalization_30/beta/read"
+  input: "batch_normalization_30/moving_mean/read"
+  input: "batch_normalization_30/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_29/Relu"
+  op: "Relu"
+  input: "batch_normalization_30/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_32/kernel/read"
+  op: "Identity"
+  input: "conv2d_32/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_32/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_32/convolution"
+  op: "Conv2D"
+  input: "activation_29/Relu"
+  input: "conv2d_32/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_31/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_31/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_31/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_31/beta/read"
+  op: "Identity"
+  input: "batch_normalization_31/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_31/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_31/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_31/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_31/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_31/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_31/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_31/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_31/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_32/convolution"
+  input: "batch_normalization_31/gamma/read"
+  input: "batch_normalization_31/beta/read"
+  input: "batch_normalization_31/moving_mean/read"
+  input: "batch_normalization_31/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_30/Relu"
+  op: "Relu"
+  input: "batch_normalization_31/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_33/kernel/read"
+  op: "Identity"
+  input: "conv2d_33/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_33/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_33/convolution"
+  op: "Conv2D"
+  input: "activation_30/Relu"
+  input: "conv2d_33/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_32/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_32/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_32/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_32/beta/read"
+  op: "Identity"
+  input: "batch_normalization_32/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_32/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_32/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_32/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_32/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_32/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_32/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_32/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_32/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_33/convolution"
+  input: "batch_normalization_32/gamma/read"
+  input: "batch_normalization_32/beta/read"
+  input: "batch_normalization_32/moving_mean/read"
+  input: "batch_normalization_32/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_31/Relu"
+  op: "Relu"
+  input: "batch_normalization_32/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_34/kernel/read"
+  op: "Identity"
+  input: "conv2d_34/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_34/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_34/convolution"
+  op: "Conv2D"
+  input: "activation_31/Relu"
+  input: "conv2d_34/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_10/add"
+  op: "Add"
+  input: "conv2d_34/convolution"
+  input: "add_9/add"
+}
+node {
+  name: "batch_normalization_33/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_33/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_33/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_33/beta/read"
+  op: "Identity"
+  input: "batch_normalization_33/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_33/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_33/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_33/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_33/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_33/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_33/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_33/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_33/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_10/add"
+  input: "batch_normalization_33/gamma/read"
+  input: "batch_normalization_33/beta/read"
+  input: "batch_normalization_33/moving_mean/read"
+  input: "batch_normalization_33/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_32/Relu"
+  op: "Relu"
+  input: "batch_normalization_33/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_35/kernel/read"
+  op: "Identity"
+  input: "conv2d_35/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_35/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_35/convolution"
+  op: "Conv2D"
+  input: "activation_32/Relu"
+  input: "conv2d_35/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_34/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_34/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_34/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_34/beta/read"
+  op: "Identity"
+  input: "batch_normalization_34/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_34/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_34/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_34/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_34/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_34/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_34/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_34/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_34/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_35/convolution"
+  input: "batch_normalization_34/gamma/read"
+  input: "batch_normalization_34/beta/read"
+  input: "batch_normalization_34/moving_mean/read"
+  input: "batch_normalization_34/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_33/Relu"
+  op: "Relu"
+  input: "batch_normalization_34/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_36/kernel/read"
+  op: "Identity"
+  input: "conv2d_36/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_36/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_36/convolution"
+  op: "Conv2D"
+  input: "activation_33/Relu"
+  input: "conv2d_36/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_35/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_35/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_35/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_35/beta/read"
+  op: "Identity"
+  input: "batch_normalization_35/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_35/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_35/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_35/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_35/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_35/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_35/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_35/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_35/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_36/convolution"
+  input: "batch_normalization_35/gamma/read"
+  input: "batch_normalization_35/beta/read"
+  input: "batch_normalization_35/moving_mean/read"
+  input: "batch_normalization_35/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_34/Relu"
+  op: "Relu"
+  input: "batch_normalization_35/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_37/kernel/read"
+  op: "Identity"
+  input: "conv2d_37/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_37/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_37/convolution"
+  op: "Conv2D"
+  input: "activation_34/Relu"
+  input: "conv2d_37/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_11/add"
+  op: "Add"
+  input: "conv2d_37/convolution"
+  input: "add_10/add"
+}
+node {
+  name: "batch_normalization_36/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_36/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_36/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_36/beta/read"
+  op: "Identity"
+  input: "batch_normalization_36/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_36/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_36/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_36/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_36/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_36/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_36/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_36/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_36/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_11/add"
+  input: "batch_normalization_36/gamma/read"
+  input: "batch_normalization_36/beta/read"
+  input: "batch_normalization_36/moving_mean/read"
+  input: "batch_normalization_36/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_35/Relu"
+  op: "Relu"
+  input: "batch_normalization_36/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_38/kernel/read"
+  op: "Identity"
+  input: "conv2d_38/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_38/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_38/convolution"
+  op: "Conv2D"
+  input: "activation_35/Relu"
+  input: "conv2d_38/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_37/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_37/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_37/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_37/beta/read"
+  op: "Identity"
+  input: "batch_normalization_37/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_37/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_37/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_37/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_37/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_37/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_37/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_37/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_37/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_38/convolution"
+  input: "batch_normalization_37/gamma/read"
+  input: "batch_normalization_37/beta/read"
+  input: "batch_normalization_37/moving_mean/read"
+  input: "batch_normalization_37/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_36/Relu"
+  op: "Relu"
+  input: "batch_normalization_37/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_39/kernel/read"
+  op: "Identity"
+  input: "conv2d_39/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_39/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_39/convolution"
+  op: "Conv2D"
+  input: "activation_36/Relu"
+  input: "conv2d_39/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_38/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_38/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_38/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_38/beta/read"
+  op: "Identity"
+  input: "batch_normalization_38/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_38/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_38/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_38/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_38/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_38/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_38/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_38/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_38/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_39/convolution"
+  input: "batch_normalization_38/gamma/read"
+  input: "batch_normalization_38/beta/read"
+  input: "batch_normalization_38/moving_mean/read"
+  input: "batch_normalization_38/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_37/Relu"
+  op: "Relu"
+  input: "batch_normalization_38/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_40/kernel/read"
+  op: "Identity"
+  input: "conv2d_40/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_40/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_40/convolution"
+  op: "Conv2D"
+  input: "activation_37/Relu"
+  input: "conv2d_40/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_12/add"
+  op: "Add"
+  input: "conv2d_40/convolution"
+  input: "add_11/add"
+}
+node {
+  name: "batch_normalization_39/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_39/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_39/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_39/beta/read"
+  op: "Identity"
+  input: "batch_normalization_39/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_39/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_39/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_39/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_39/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_39/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_39/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_39/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_39/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_12/add"
+  input: "batch_normalization_39/gamma/read"
+  input: "batch_normalization_39/beta/read"
+  input: "batch_normalization_39/moving_mean/read"
+  input: "batch_normalization_39/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_38/Relu"
+  op: "Relu"
+  input: "batch_normalization_39/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_41/kernel/read"
+  op: "Identity"
+  input: "conv2d_41/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_41/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_41/convolution"
+  op: "Conv2D"
+  input: "activation_38/Relu"
+  input: "conv2d_41/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_40/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_40/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_40/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_40/beta/read"
+  op: "Identity"
+  input: "batch_normalization_40/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_40/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_40/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_40/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_40/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_40/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_40/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_40/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_40/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_41/convolution"
+  input: "batch_normalization_40/gamma/read"
+  input: "batch_normalization_40/beta/read"
+  input: "batch_normalization_40/moving_mean/read"
+  input: "batch_normalization_40/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_39/Relu"
+  op: "Relu"
+  input: "batch_normalization_40/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_42/kernel/read"
+  op: "Identity"
+  input: "conv2d_42/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_42/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_42/convolution"
+  op: "Conv2D"
+  input: "activation_39/Relu"
+  input: "conv2d_42/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "SAME"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_41/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_41/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_41/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_41/beta/read"
+  op: "Identity"
+  input: "batch_normalization_41/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_41/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_41/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_41/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_41/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_41/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_41/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_41/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_41/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "conv2d_42/convolution"
+  input: "batch_normalization_41/gamma/read"
+  input: "batch_normalization_41/beta/read"
+  input: "batch_normalization_41/moving_mean/read"
+  input: "batch_normalization_41/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_40/Relu"
+  op: "Relu"
+  input: "batch_normalization_41/FusedBatchNorm_1"
+}
+node {
+  name: "conv2d_43/kernel/read"
+  op: "Identity"
+  input: "conv2d_43/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@conv2d_43/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "conv2d_43/convolution"
+  op: "Conv2D"
+  input: "activation_40/Relu"
+  input: "conv2d_43/kernel/read"
+  attr {
+    key: "dilations"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 1
+        i: 1
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "add_13/add"
+  op: "Add"
+  input: "conv2d_43/convolution"
+  input: "add_12/add"
+}
+node {
+  name: "batch_normalization_42/gamma/read"
+  op: "Identity"
+  input: "batch_normalization_42/gamma"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_42/gamma"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_42/beta/read"
+  op: "Identity"
+  input: "batch_normalization_42/beta"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_42/beta"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_42/moving_mean/read"
+  op: "Identity"
+  input: "batch_normalization_42/moving_mean"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_42/moving_mean"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_42/moving_variance/read"
+  op: "Identity"
+  input: "batch_normalization_42/moving_variance"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@batch_normalization_42/moving_variance"
+      }
+    }
+  }
+}
+node {
+  name: "batch_normalization_42/FusedBatchNorm_1"
+  op: "FusedBatchNorm"
+  input: "add_13/add"
+  input: "batch_normalization_42/gamma/read"
+  input: "batch_normalization_42/beta/read"
+  input: "batch_normalization_42/moving_mean/read"
+  input: "batch_normalization_42/moving_variance/read"
+  attr {
+    key: "epsilon"
+    value {
+      f: 1.99999994948e-05
+    }
+  }
+}
+node {
+  name: "activation_41/Relu"
+  op: "Relu"
+  input: "batch_normalization_42/FusedBatchNorm_1"
+}
+node {
+  name: "average_pooling2d_1/AvgPool"
+  op: "AvgPool"
+  input: "activation_41/Relu"
+  attr {
+    key: "ksize"
+    value {
+      list {
+        i: 1
+        i: 8
+        i: 8
+        i: 1
+      }
+    }
+  }
+  attr {
+    key: "padding"
+    value {
+      s: "VALID"
+    }
+  }
+  attr {
+    key: "strides"
+    value {
+      list {
+        i: 1
+        i: 8
+        i: 8
+        i: 1
+      }
+    }
+  }
+}
+node {
+  name: "flatten_1/Reshape"
+  op: "Flatten"
+  input: "average_pooling2d_1/AvgPool"
+}
+node {
+  name: "dense_1/kernel/read"
+  op: "Identity"
+  input: "dense_1/kernel"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@dense_1/kernel"
+      }
+    }
+  }
+}
+node {
+  name: "dense_1/bias/read"
+  op: "Identity"
+  input: "dense_1/bias"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@dense_1/bias"
+      }
+    }
+  }
+}
+node {
+  name: "dense_1/MatMul"
+  op: "MatMul"
+  input: "flatten_1/Reshape"
+  input: "dense_1/kernel/read"
+  attr {
+    key: "transpose_a"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "transpose_b"
+    value {
+      b: false
+    }
+  }
+}
+node {
+  name: "dense_1/BiasAdd"
+  op: "BiasAdd"
+  input: "dense_1/MatMul"
+  input: "dense_1/bias/read"
+}
+node {
+  name: "activation_42/Softmax"
+  op: "Softmax"
+  input: "dense_1/BiasAdd"
+}
+library {
+}
