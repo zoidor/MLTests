@@ -7,128 +7,126 @@
 
 #include <iterator>
 #include <iostream>
-		
-const char* model_path = "application/data/malaria_model.tflite";
-const char* png_file_path = "application/data/images/Parasitized/C68P29N_ThinF_IMG_20150819_134326_cell_115.png";
-const int resized_input_width = 64;
-const int resized_input_height = 64;
-const bool useNNAPI = true;
-const bool verbose = true;
-const int number_of_threads = 4;
-
+#include <cmath>
+	
 #define LOG(x) std::cerr
+
+struct InferOutput{
+	float c1{0};
+	float c2{0};
+	bool isValid() const {return !std::isnan(c1) && !std::isnan(c2);}
+	InferOutput(const float c1, const float c2) : c1(c1), c2(c2) {}
+};
+
+class Inference{
+	private:
+		std::unique_ptr<tflite::Interpreter> interpreter;
+		tflite::ops::builtin::BuiltinOpResolver resolver;
+		std::unique_ptr<tflite::FlatBufferModel> model;	
+		int input{0};
+		int output{0};
+	public:
+		Inference(const char * model_path, const bool useNNAPI, const int number_of_threads = -1){
+
+			if(!model_path)
+				return;
+					
+			model = tflite::FlatBufferModel::BuildFromFile(model_path);
+			if (!model) {
+				LOG(FATAL) << "Failed to mmap model " << model_path << "\n";
+				return;
+			}
+
+			tflite::InterpreterBuilder(*model, resolver)(&interpreter);
+			if (!interpreter) {
+				LOG(FATAL) << "Failed to construct interpreter\n";
+				return;
+			}
+			
+			interpreter->UseNNAPI(useNNAPI);
+
+			if (number_of_threads != -1) {
+				interpreter->SetNumThreads(number_of_threads);
+			}
+
+			if (interpreter->AllocateTensors() != kTfLiteOk) {
+			    interpreter = nullptr;
+			}
+
+			const auto& inputs = interpreter->inputs();
+			const auto& outputs = interpreter->outputs();
+
+			input = inputs[0];
+			output = outputs[0];
+		}
+		
+		bool isInterpreterInstantiated() const {return interpreter != nullptr;}	
+		
+		int wanted_height() const {
+			if(!isInterpreterInstantiated()) return -1;
+			return interpreter->tensor(input)->dims->data[1];
+		}
+
+		int wanted_width() const {
+			if(!isInterpreterInstantiated()) return -1;
+			return interpreter->tensor(input)->dims->data[2];
+		}
+
+		int wanted_channels() const {
+			if(!isInterpreterInstantiated()) return -1;
+			return interpreter->tensor(input)->dims->data[3];
+		}
+
+		InferOutput calculateInference(const char * png_file_path){
+			
+			if(!isInterpreterInstantiated()) return {NAN, NAN};
+	
+			auto in = malaria::read_png_and_resize(png_file_path, wanted_height(), wanted_width(), wanted_channels());
+
+			if(in.size() != (wanted_height() * wanted_width() * wanted_channels())){
+				LOG(FATAL) << "Resize  failed, output of wrong size: " << in.size() << '\n';
+				return {NAN, NAN};
+			}
+
+			std::copy(in.cbegin(), in.cend(), interpreter->typed_tensor<float>(input));
+
+			if (interpreter->Invoke() != kTfLiteOk) {
+				LOG(FATAL) << "Interpreter invocation failed\n";
+				return {NAN, NAN};
+			}
+
+			TfLiteIntArray* output_dims = interpreter->tensor(output)->dims;
+
+			auto output_size = output_dims->data[output_dims->size - 1];
+
+			if (output_size != 2) {
+				LOG(FATAL) << "Output tensor size different\n";
+				return {NAN, NAN};
+			}
+
+			auto data = interpreter->typed_tensor<float>(output);
+
+			return InferOutput{data[0], data[1]};		  	
+		}
+};
 
 void RunInference() {
 
-  if (!model_path) {
-    LOG(ERROR) << "no model file name\n";
-    exit(-1);
-  }
+  const char* model_path = "application/data/malaria_model.tflite";
+  const bool useNNAPI = true;
+  const int number_of_threads = 4;
 
-  auto model = tflite::FlatBufferModel::BuildFromFile(model_path);
-  if (!model) {
-    LOG(FATAL) << "\nFailed to mmap model " << model_path << "\n";
-    exit(-1);
-  }
-
-  LOG(INFO) << "Loaded model " << model_path << "\n";
-  model->error_reporter();
-  LOG(INFO) << "resolved reporter\n";
-
-  tflite::ops::builtin::BuiltinOpResolver resolver;
-
-  std::unique_ptr<tflite::Interpreter> interpreter;
-  tflite::InterpreterBuilder(*model, resolver)(&interpreter);
-  if (!interpreter) {
-    LOG(FATAL) << "Failed to construct interpreter\n";
-    exit(-1);
-  }
-
-  interpreter->UseNNAPI(useNNAPI);
-
-  if (verbose) {
-    LOG(INFO) << "tensors size: " << interpreter->tensors_size() << "\n";
-    LOG(INFO) << "nodes size: " << interpreter->nodes_size() << "\n";
-    LOG(INFO) << "inputs: " << interpreter->inputs().size() << "\n";
-    LOG(INFO) << "input(0) name: " << interpreter->GetInputName(0) << "\n";
-
-    int t_size = interpreter->tensors_size();
-    for (int i = 0; i < t_size; i++) {
-      if (interpreter->tensor(i)->name)
-        LOG(INFO) << i << ": " << interpreter->tensor(i)->name << ", "
-                  << interpreter->tensor(i)->bytes << ", "
-                  << interpreter->tensor(i)->type << ", "
-                  << interpreter->tensor(i)->params.scale << ", "
-                  << interpreter->tensor(i)->params.zero_point << "\n";
-    }
-  }
-
-  if (number_of_threads != -1) {
-    interpreter->SetNumThreads(number_of_threads);
-  }
-
-  auto in = malaria::read_png_and_resize(png_file_path, resized_input_height, resized_input_width, 3);
-
-  if(in.size() != (resized_input_width * resized_input_height * 3)){
-    LOG(INFO) << "Wrong number of bytes for " << png_file_path << ", got "<< in.size() << " bytes \n";
-    exit(-1);
-  }
-
-  int input = interpreter->inputs()[0];
-  if (verbose) LOG(INFO) << "input: " << input << "\n";
-
-  const std::vector<int> inputs = interpreter->inputs();
-  const std::vector<int> outputs = interpreter->outputs();
-
-  if (verbose) {
-    LOG(INFO) << "number of inputs: " << inputs.size() << "\n";
-    LOG(INFO) << "number of outputs: " << outputs.size() << "\n";
-  }
-
-  if (interpreter->AllocateTensors() != kTfLiteOk) {
-    LOG(FATAL) << "Failed to allocate tensors!";
-    exit(-1);
-  }
-
-  if (verbose) PrintInterpreterState(interpreter.get());
-
-  // get input dimension from the input tensor metadata
-  // assuming one input only
-  TfLiteIntArray* dims = interpreter->tensor(input)->dims;
-  const int wanted_height = dims->data[1];
-  const int wanted_width = dims->data[2];
-  const int wanted_channels = dims->data[3];
-
-  if(wanted_height != resized_input_height){
-	LOG(ERR) << "Height does not match";
-        exit(-1);
-  }
-
-  if(wanted_width != resized_input_width){
-	LOG(ERR) << "Width does not match";
-        exit(-1);
-  }
-
-  if(wanted_channels != 3){
-	LOG(ERR) << "Only RGB images are supported";
-        exit(-1);
-  }
-
-  std::copy(in.cbegin(), in.cend(), interpreter->typed_tensor<float>(input));
-
+  Inference infer{model_path, useNNAPI, number_of_threads};
   
-  if (interpreter->Invoke() != kTfLiteOk) {
-	LOG(FATAL) << "Failed to invoke tflite!\n";
-        exit(-1);
+  if(!infer.isInterpreterInstantiated()){
+    LOG(FATAL) << "Failed to instantiated interpreter\n";
+    exit(-1);
   }
   
-  
-  int output = interpreter->outputs()[0];
-  TfLiteIntArray* output_dims = interpreter->tensor(output)->dims;
-  
-  // assume output dims to be something like (1, 1, ... ,size)
-  auto output_size = output_dims->data[output_dims->size - 1];
-  std::cout << "Output size " << output_size << "\n";
+  for(const auto& path : malaria::get_png_paths()){
+  	auto p = infer.calculateInference(path.c_str()); 
+  	std::cout << path << ' ' << p.c1 << ' ' << p.c2 << '\n';
+ }
 }
 
 
