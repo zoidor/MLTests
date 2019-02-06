@@ -26,6 +26,7 @@ safe_mkdir(output_dir)
 keras_model = keras.models.load_model("../../kerasModel/malaria_model.h5")
 onnx_model = onnxmltools.convert_keras(keras_model) 
 onnxmltools.utils.save_model(onnx_model, output_dir + "test_model.onnx")
+onnxmltools.utils.save_text(onnx_model, output_dir + "test_model.json")
 stripField(onnx_model)
 
 init_net, predict_net = Caffe2Backend.onnx_graph_to_caffe2_net(onnx_model)
